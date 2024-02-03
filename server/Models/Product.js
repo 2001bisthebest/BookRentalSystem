@@ -7,7 +7,8 @@ const productSchema = mongoose.Schema({
     },
     price: {
         type: Number
-    }
+    },
+    file: String
 }, { timestamps: true })
 
 module.exports = mongoose.model('products', productSchema)

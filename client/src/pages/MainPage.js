@@ -1,6 +1,5 @@
 import React from 'react';
 import Footer from '../component/Footer';
-import Menubar from '../component/Menubar';
 import Navbar from '../component/Navbar';
 import Sidebar from '../component/Sidebar';
 import TabScrollItems from '../component/TabScrollItems';
@@ -15,9 +14,9 @@ function MainPage() {
             <div className='flex w-full h-full'>
                 <Sidebar />
                 <div className="w-full h-full grow py-8 border flex flex-col justify-center gap-4 bg-white-bg">
-                    <div className='items-center mx-36'>
+                    {/* <div className='items-center mx-36'>
                         <Menubar />
-                    </div>
+                    </div> */}
                     <div className='mx-20 my-10'>
                         <img src={book} />
                     </div>

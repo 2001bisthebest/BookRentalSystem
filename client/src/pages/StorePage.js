@@ -1,7 +1,6 @@
 import React from 'react'
 import Footer from '../component/Footer'
 import ListItems from '../component/ListItems'
-import Menubar from '../component/Menubar'
 import Navbar from '../component/Navbar'
 import Sidebar from '../component/Sidebar'
 
@@ -14,10 +13,13 @@ const StorePage = () => {
             <div className='flex w-full h-full'>
                 <Sidebar />
                 <div className="w-full h-full grow py-8 border flex flex-col justify-center gap-4 bg-white-bg">
-                    <div className='items-center mx-36'>
+                    {/* <div className='items-center mx-36'>
                         <Menubar />
+                    </div> */}
+                    <div>
+                        <p className='flex justify-start px-20 text-2xl font-bold'>ร้านเช่า</p>
                     </div>
-                    <div className='mx-20 my-10'>
+                    <div className='px-20 py-5'>
                         <ListItems />
                     </div>
                 </div>
