@@ -6,7 +6,7 @@ const { upload } = require('../Middleware/upload')
 
 router.get('/product', auth, list)
 router.get('/product/:id', read)
-router.post('/product', auth, upload, create)
+router.post('/product', upload, create)
 router.put('/product/:id', update)
 router.delete('/product/:id', remove)
 

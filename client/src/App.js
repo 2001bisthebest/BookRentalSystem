@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
 import RegisterPage from './pages/RegisterPage';
 import StorePage from './pages/StorePage';
+import OpenStore from './pages/admin/OpenStore';
+import { PersonalInfo } from './pages/customer/PersonalInfo';
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path='/category' element={<AllBooksPage />} />
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/login' element={<LoginPage />} />
+          <Route path='/open_store' element={<OpenStore />} />
+          <Route path='/personalinfo' element={<PersonalInfo />} />
         </Routes>
       </div>
     </BrowserRouter>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const Sidebar = () => {
     return (
-        <div className='flex w-80 h-full bg-white-snow drop-shadow text-xl'>
+        <div className='flex w-80 h-full bg-white-snow drop-shadow'>
             <div className='flex flex-col gap-2 px-10 py-20 items-start'>
                 <p>Little Reader</p>
                 <Link to={'/'}><p>หน้าหลัก</p></Link>

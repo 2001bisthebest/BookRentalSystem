@@ -1,13 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import BasketSVG from '../SVG/BasketSVG.js'
 import SearchSVG from '../SVG/SearchSVG.js'
 import UserSVG from '../SVG/UserSVG.js'
 
 const Navbar = () => {
+    const [isClick, setIsClick] = useState(false)
+    const navigate = useNavigate()
+    const openMenu = () => {
+        if (!isClick) {
+            setIsClick(true)
+        } else {
+            setIsClick(false)
+        }
+    }
+
     return (
         <div className='flex w-full h-18 px-4 py-2 bg-dark-purple justify-between items-center'>
             <div className='text-white'>
-                <p>Little Reader</p>
+                <a href='/'>Little Reader</a>
             </div>
             <div className='flex justify-between items-center gap-5'>
                 <div className='flex justify-between items-center bg-light-purple rounded-full px-2'>
@@ -15,7 +26,23 @@ const Navbar = () => {
                     <SearchSVG />
                 </div>
                 <BasketSVG />
-                <UserSVG />
+                <button onClick={openMenu}>
+                    <UserSVG />
+                    {isClick ?
+                        (<div className='absolute top-18 right-4 m-1 p-2 flex flex-col items-center gap-2 w-40 bg-light-purple text-white rounded-lg'>
+                            <a href='/personalinfo'>profile</a>
+                            <hr className='w-3/4' />
+                            <a>สถานะหนังสือ</a>
+                            <hr className='w-3/4' />
+                            <a href='/open_store'>ร้านเช่าของฉัน</a>
+                            <hr className='w-3/4' />
+                            <p>ออกจากระบบ</p>
+                        </div>)
+                        :
+                        (<div>
+
+                        </div>)}
+                </button>
             </div>
         </div>
     )

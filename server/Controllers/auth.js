@@ -5,18 +5,46 @@ const jwt = require('jsonwebtoken')
 exports.register = async (req, res) => {
     try {
         //1. check user
-        const { name, password } = req.body
+        // const { username, password, name, email, address, telephone, typeofbook, file } = req.body
 
-        var user = await User.findOne({ name })
+        var data = req.body
+        console.log('body ', req.body)
+        console.log('file', req.file)
+        const username = data.username
+        const password = data.password
+        const name = data.name
+        const email = data.email
+        const address = data.address
+        const telephone = data.telephone
+        const typeofbook = data.typeofbook
+        var file
+        // console.log('eiei', req.file)
 
+        if (req.file) {
+            data.file = req.file.filename
+        }
+        console.log(data)
+        // var data = req.body
+        // if (req.file) {
+        //     data.file = req.file.filename
+        // }
+        // console.log(data)
+        var user = await User.findOne({ username })
+        // console.log(req.body)
         if (user) {
             return res.send('User Alredy Exists!!!').status(400)
         }
         //2. encrypt
         const salt = await bcrypt.genSalt(10)
         user = new User({
+            username,
+            password,
             name,
-            password
+            email,
+            address,
+            telephone,
+            typeofbook,
+            file
         })
         console.log(user)
         user.password = await bcrypt.hash(password, salt)
@@ -31,8 +59,8 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         //1. Check user
-        const { name, password } = req.body
-        var user = await User.findOneAndUpdate({ name }, { new: true })
+        const { username, password } = req.body
+        var user = await User.findOneAndUpdate({ username }, { new: true })
         console.log(user)
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password)
@@ -42,7 +70,8 @@ exports.login = async (req, res) => {
             //2. Payload
             var payload = {
                 user: {
-                    name: user.name
+                    name: user.name,
+                    id: user._id
                 }
             }
             //3. Generate token
