@@ -5,10 +5,25 @@ const storeSchema = mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: users
     },
-    name: String,
-    address: String,
-    telephone: Number,
-    detailStore: String,
-    numberOfDayForShipping: Number
+    name: {
+        type: String,
+        default: 'Store name'
+    },
+    address: {
+        type: String,
+        default: 'Store address'
+    },
+    telephone: {
+        type: Number,
+        default: 'Store telephone'
+    },
+    detailStore: {
+        type: String,
+        default: 'Store detail'
+    },
+    numberOfDayForShipping: {
+        type: Number,
+        default: 0
+    }
 })
-module.exports = mongoose.model('store', storeSchema)
+module.exports = mongoose.model('stores', storeSchema)

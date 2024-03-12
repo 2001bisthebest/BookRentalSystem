@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const User = require('../Models/User')
 const jwt = require('jsonwebtoken')
+const Store = require('../Models/Store')
 
 exports.register = async (req, res) => {
     try {
@@ -61,19 +62,34 @@ exports.login = async (req, res) => {
         //1. Check user
         const { username, password } = req.body
         var user = await User.findOneAndUpdate({ username }, { new: true })
-        console.log(user)
+        const admin = await Store.findOne({ accId: user._id }).exec()
+        console.log(admin)
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password)
             if (!isMatch) {
                 return res.status(400).send('Password is not Valid!!')
             }
             //2. Payload
-            var payload = {
-                user: {
-                    name: user.name,
-                    id: user._id
+            if (admin) {
+                var payload = {
+                    user: {
+                        username: user.username,
+                        id: user._id
+                    },
+                    admin: {
+                        id: admin._id,
+                        name: admin.name
+                    }
+                }
+            } else {
+                var payload = {
+                    user: {
+                        username: user.username,
+                        id: user._id
+                    }
                 }
             }
+
             //3. Generate token
             jwt.sign(payload, 'jwtsecret', { expiresIn: '1d' }, (err, token) => {
                 if (err) throw err;
@@ -82,6 +98,26 @@ exports.login = async (req, res) => {
         } else {
             return res.status(400).send('User not found')
         }
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.currentUser = async (req, res) => {
+    try {
+        const user = await User.findOne({ username: req.user.username }).select('-password').exec()
+        res.send(user)
+    } catch {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.currentAdmin = async (req, res) => {
+    try {
+        console.log(req.body)
+        const user = await User.findOne({ username: req.body.username }).exec()
+        const admin = await Store.findOne({ accId: user._id }).exec()
+        res.send(admin)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')

@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import BasketSVG from '../SVG/BasketSVG.js'
 import SearchSVG from '../SVG/SearchSVG.js'
 import UserSVG from '../SVG/UserSVG.js'
 
 const Navbar = () => {
     const [isClick, setIsClick] = useState(false)
-    const navigate = useNavigate()
     const openMenu = () => {
         if (!isClick) {
             setIsClick(true)
@@ -14,7 +13,9 @@ const Navbar = () => {
             setIsClick(false)
         }
     }
-
+    const { user } = useSelector((state) => ({ ...state }))
+    const idUser = user.user.id
+    const haveStore = user.user.haveStore
     return (
         <div className='flex w-full h-18 px-4 py-2 bg-dark-purple justify-between items-center'>
             <div className='text-white'>
@@ -34,9 +35,9 @@ const Navbar = () => {
                             <hr className='w-3/4' />
                             <a>สถานะหนังสือ</a>
                             <hr className='w-3/4' />
-                            <a href='/open_store'>ร้านเช่าของฉัน</a>
+                            {haveStore ? <a href={'/storeinfo/' + idUser}>ร้านเช่าของฉัน</a> : <a href={'/open_store/' + idUser}>ร้านเช่าของฉัน</a>}
                             <hr className='w-3/4' />
-                            <p>ออกจากระบบ</p>
+                            {user.user.token ? <p>ออกจากระบบ</p> : <a href='login'>เข้าสู่ระบบ</a>}
                         </div>)
                         :
                         (<div>

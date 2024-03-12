@@ -1,10 +1,13 @@
 import axios from 'axios'
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { login as loginRedux } from '../../store/userSlice'
 
 const LoginPage = () => {
     const [form, setForm] = useState({})
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const handleChange = (e) => {
         setForm({
             ...form,
@@ -19,7 +22,13 @@ const LoginPage = () => {
             password: data.get("password")
         }
         await axios.post(process.env.REACT_APP_API + '/login', login).then((res) => {
-            console.log(res)
+            console.log(res.data)
+            dispatch(loginRedux({
+                username: res.data.payload.user.username,
+                id: res.data.payload.user.id,
+                token: res.data.token
+            }))
+            localStorage.setItem('token', res.data.token)
             navigate('/')
         }).catch(err => console.log(err))
     }
@@ -37,7 +46,7 @@ const LoginPage = () => {
                     <button className='bg-light-purple px-6 py-2 rounded w-1.4 md:w-2/3'><p className='text-white'>Sign In</p></button>
                     <div className='flex gap-1 text-white'>
                         <p>You don't have an account?</p>
-                        <p className='underline'>Register</p>
+                        <a href='/register' className='underline'>Register</a>
                     </div>
 
                 </div>
