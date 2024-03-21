@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import ListItems from '../../component/list/ListItems';
 
 const AllBooksPage = () => {
     const [data, setData] = useState([])
@@ -17,15 +18,12 @@ const AllBooksPage = () => {
     }
     console.log(data)
     return (
-        <div className="w-full h-full grow py-8 border flex flex-col justify-center gap-4 bg-white-bg">
-            {/* <div className='items-center px-36'>
-                        <Menubar />
-                    </div> */}
+        <div className="w-full h-full grow py-8 border flex flex-col justify-start gap-4 bg-white-bg">
             <div>
                 <p className='flex justify-start px-20 text-2xl font-bold'>หนังสือทั้งหมด</p>
             </div>
             <div className='px-20 py-5'>
-                {/* <ListItems /> */}
+                <ListItems children={data} />
             </div>
         </div>
     )

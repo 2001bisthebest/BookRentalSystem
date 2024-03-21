@@ -1,7 +1,9 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import ListItems from '../../component/ListItems'
+import PlusSVG from '../../SVG/PlusSVG'
+import ListItems from '../../component/list/ListItems'
+import AddBook from '../../component/modal/AddBook'
 
 const StorePersonalInfo = () => {
     const [data, setData] = useState([])
@@ -9,13 +11,16 @@ const StorePersonalInfo = () => {
     const idStore = admin.admin.id
     useEffect(() => {
         loadData()
-    }, [])
+    }, [idStore])
     const loadData = async () => {
         await axios.get(process.env.REACT_APP_API + '/listbook/' + idStore).then(res => {
             setData(res.data)
         }).catch(err => console.log(err))
     }
-    console.log(data)
+    const [isOpen, setOpen] = useState(false)
+    const openModal = () => {
+        setOpen(!isOpen)
+    }
     return (
         <div className="w-full h-full grow py-8 border flex flex-col justify-center gap-4 bg-white-bg">
             <div className='flex flex-col items-start gap-10'>
@@ -30,13 +35,29 @@ const StorePersonalInfo = () => {
                 </div>
                 <div className='flex flex-col gap-5 justify-center items-start px-20'>
                     <p>หนังสือทั้งหมด</p>
-                    <ListItems children={data} />
+                    <div className='flex gap-2'>
+                        <div className='relative flex flex-col gap-2 bg-gray items-start'>
+                            <button type='button' onClick={openModal} className='border w-40 h-40 flex flex-col justify-center items-center'>
+                                <PlusSVG />
+                                <p>Add</p>
+                            </button>
+                        </div>
+                        <ListItems children={data} />
+                    </div>
+
                 </div>
                 <div className='flex flex-col gap-5 justify-center items-start px-20'>
                     <p>หนังสือแนะนำ</p>
+                    <div className='relative flex flex-col gap-2 bg-gray items-start'>
+                        <button type='button' onClick={openModal} className='border w-40 h-40 flex flex-col justify-center items-center'>
+                            <PlusSVG />
+                            <p>Add</p>
+                        </button>
+                    </div>
                     <ListItems />
                 </div>
             </div>
+            <AddBook props={isOpen} />
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import TabScrollItems from '../../component/TabScrollItems';
+import TabScrollItems from '../../component/list/TabScrollItems';
 import book from '../../images/book.jpg';
 
 function MainPage() {

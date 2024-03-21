@@ -11,7 +11,14 @@ const bookCopySchema = mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: stores
     },
-    copyNumber: Number,
-    status: Boolean
+    copyNumber: {
+        type: Number,
+        default: 0
+    },
+    status: {
+        type: Boolean,
+        default: true
+    }
 })
+
 module.exports = mongoose.model('bookcopies', bookCopySchema)

@@ -15,6 +15,8 @@ module.exports = {
     container: {
       'padding': '0',
     },
+    fontFamily: {
+    }
   },
   plugins: [],
 }

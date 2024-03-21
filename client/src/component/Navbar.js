@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import BasketSVG from '../SVG/BasketSVG.js'
 import SearchSVG from '../SVG/SearchSVG.js'
 import UserSVG from '../SVG/UserSVG.js'
@@ -19,7 +20,7 @@ const Navbar = () => {
     return (
         <div className='flex w-full h-18 px-4 py-2 bg-dark-purple justify-between items-center'>
             <div className='text-white'>
-                <a href='/'>Little Reader</a>
+                <Link to={'/'}><p>Little Reader</p></Link>
             </div>
             <div className='flex justify-between items-center gap-5'>
                 <div className='flex justify-between items-center bg-light-purple rounded-full px-2'>

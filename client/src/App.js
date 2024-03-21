@@ -1,3 +1,5 @@
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom';
 import './App.css';
@@ -20,25 +22,35 @@ function App() {
   const dispatch = useDispatch()
   var { id } = useParams()
   const token = localStorage.getItem('token')
+  const [category, setCategory] = useState([])
   console.log('token', token)
-  currentUser(token).then(res => {
-    console.log(res)
-    dispatch(loginUser({
-      username: res.data.username,
-      id: res.data._id,
-      haveStore: res.data.haveStore,
-      token: token
-    }))
-    if (res.data.haveStore === true) {
-      currentAdmin(token, res.data.username).then(res => {
-        console.log('admin ', res)
-        dispatch(loginAdmin({
-          id: res.data._id,
-          name: res.data.name
-        }))
-      })
-    }
-  }).catch(err => console.log(err))
+  if (token) {
+    currentUser(token).then(res => {
+      console.log(res)
+      dispatch(loginUser({
+        username: res.data.username,
+        id: res.data._id,
+        haveStore: res.data.haveStore,
+        token: token
+      }))
+      if (res.data.haveStore === true) {
+        currentAdmin(token, res.data.username).then(res => {
+          console.log('admin ', res)
+          dispatch(loginAdmin({
+            id: res.data._id,
+            name: res.data.name
+          }))
+        })
+      }
+    }).catch(err => console.log(err))
+  }
+  const fetchCategory = async () => {
+    await axios.get(process.env.REACT_APP_API + '/listcategory').then(res => setCategory(res.data)).catch(err => console.log(err))
+  }
+  useEffect(() => {
+    fetchCategory()
+  }, [])
+
   return (
     <BrowserRouter>
       <div className="App">
@@ -58,6 +70,11 @@ function App() {
               <AllBooksPage />
             </GeneralRoute>}
           />
+          {/* <Route path={`/` + category.name} element={
+            <GeneralRoute>
+              <CategoryPage />
+            </GeneralRoute>
+          } /> */}
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/open_store/:id' element={

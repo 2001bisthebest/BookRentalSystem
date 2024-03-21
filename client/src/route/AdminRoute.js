@@ -11,7 +11,7 @@ const AdminRoute = ({ children }) => {
             <div className='w-full h-full'>
                 <Navbar />
             </div>
-            <div className='flex w-full h-screen'>
+            <div className='flex w-full h-full'>
                 <Sidebar />
                 <div className="w-full h-full">
                     {children}
