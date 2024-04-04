@@ -1,10 +1,15 @@
 const Book = require("../Models/Book")
 const BookCopy = require("../Models/BookCopy")
 const Category = require("../Models/Category")
+const CategoryOfBook = require("../Models/CategoryOfBook")
 
 exports.addBook = async (req, res) => {
     try {
         const { title, author, translator, publisher, year, price } = req.body
+        var file
+        if (req.file) {
+            file = req.file.filename
+        }
         const storeId = req.params.id
         var book = await new Book({
             storeId,
@@ -13,7 +18,8 @@ exports.addBook = async (req, res) => {
             translator,
             publisher,
             year,
-            price
+            price,
+            file
         })
         console.log(book)
         await Book(book).save()
@@ -30,6 +36,16 @@ exports.listBook = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(500).send(err)
+    }
+}
+exports.showBookInfo = async (req, res) => {
+    try {
+        const bookId = req.params.id
+        const bookInfo = await Book.findOne({ _id: bookId }).exec()
+        res.send(bookInfo)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
     }
 }
 exports.listBookFromStore = async (req, res) => {
@@ -67,6 +83,16 @@ exports.addBookCopy = async (req, res) => {
         res.status(500).send(err)
     }
 }
+exports.listBookCopy = async (req, res) => {
+    try {
+        const bookId = req.params.id
+        const bookCopyList = await BookCopy.find({ BookId: bookId }).exec()
+        res.send(bookCopyList)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
 exports.addCategory = async (req, res) => {
     try {
         const { name } = req.body
@@ -85,6 +111,41 @@ exports.listCategory = async (req, res) => {
     try {
         const category = await Category.find({}).exec()
         res.send(category)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.categoryName = async (req, res) => {
+    try {
+        const categoryName = req.params.name
+        const category = await Category.findOne({ name: categoryName }).exec()
+        res.send(category)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.addCategoryOfBook = async (req, res) => {
+    try {
+        const { categoryId, bookId } = req.body
+        const categoryofbook = await new CategoryOfBook({
+            categoryId: categoryId,
+            bookId: bookId
+        }).save()
+        res.send(categoryofbook)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.listCategoryOfBook = async (req, res) => {
+    try {
+        const { category } = req.query
+        console.log(category)
+        const categoryInfo = await Category.findOne({ name: category }).exec()
+        const listCategoryOfBook = await CategoryOfBook.find({ categoryId: categoryInfo._id }).populate("bookId").exec()
+        res.send(listCategoryOfBook)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')

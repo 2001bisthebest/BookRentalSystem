@@ -3,7 +3,7 @@ const User = require("../Models/User")
 exports.showInfo = async (req, res) => {
     try {
         const id = req.params.id
-        const customer = await User.findOne({ _id: id }).exec()
+        const customer = await User.findOne({ _id: id }).select('-password').exec()
         res.send(customer)
     } catch (err) {
         console.log(err)

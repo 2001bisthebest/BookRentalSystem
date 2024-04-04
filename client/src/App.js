@@ -1,5 +1,3 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom';
 import './App.css';
@@ -8,10 +6,15 @@ import StorePersonalInfo from './pages/admin/StorePersonalInfo';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import AllBooksPage from './pages/general/AllBooksPage';
+import BookPage from './pages/general/BookPage';
+import CategoryPage from './pages/general/CategoryPage';
 import MainPage from './pages/general/MainPage';
 import StorePage from './pages/general/StorePage';
+import CartPage from './pages/user/CartPage';
 import OpenStore from './pages/user/OpenStore';
 import { PersonalInfo } from './pages/user/PersonalInfo';
+import ReservationPage from './pages/user/ReservationPage';
+import StatusBook from './pages/user/StatusBook';
 import AdminRoute from './route/AdminRoute';
 import GeneralRoute from './route/GeneralRoute';
 import UserRoute from './route/UserRoute';
@@ -20,13 +23,12 @@ import { login as loginUser } from './store/userSlice';
 
 function App() {
   const dispatch = useDispatch()
-  var { id } = useParams()
+  var { id, category } = useParams()
   const token = localStorage.getItem('token')
-  const [category, setCategory] = useState([])
   console.log('token', token)
   if (token) {
     currentUser(token).then(res => {
-      console.log(res)
+      // console.log(res)
       dispatch(loginUser({
         username: res.data.username,
         id: res.data._id,
@@ -35,7 +37,7 @@ function App() {
       }))
       if (res.data.haveStore === true) {
         currentAdmin(token, res.data.username).then(res => {
-          console.log('admin ', res)
+          // console.log('admin ', res)
           dispatch(loginAdmin({
             id: res.data._id,
             name: res.data.name
@@ -44,12 +46,6 @@ function App() {
       }
     }).catch(err => console.log(err))
   }
-  const fetchCategory = async () => {
-    await axios.get(process.env.REACT_APP_API + '/listcategory').then(res => setCategory(res.data)).catch(err => console.log(err))
-  }
-  useEffect(() => {
-    fetchCategory()
-  }, [])
 
   return (
     <BrowserRouter>
@@ -70,11 +66,11 @@ function App() {
               <AllBooksPage />
             </GeneralRoute>}
           />
-          {/* <Route path={`/` + category.name} element={
+          <Route path={'/category/:category'} element={
             <GeneralRoute>
               <CategoryPage />
             </GeneralRoute>
-          } /> */}
+          } />
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/open_store/:id' element={
@@ -91,6 +87,26 @@ function App() {
             <AdminRoute>
               <StorePersonalInfo />
             </AdminRoute>
+          } />
+          <Route path='/book/:id' element={
+            <GeneralRoute>
+              <BookPage />
+            </GeneralRoute>
+          } />
+          <Route path='/reservation/:id' element={
+            <UserRoute>
+              <ReservationPage />
+            </UserRoute>
+          } />
+          <Route path='/cart/:id' element={
+            <UserRoute>
+              <CartPage />
+            </UserRoute>
+          } />
+          <Route path='/statusbook' element={
+            <UserRoute>
+              <StatusBook />
+            </UserRoute>
           } />
         </Routes>
       </div>

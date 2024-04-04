@@ -11,7 +11,11 @@ const bookSchema = mongoose.Schema({
     translator: String,
     publisher: String,
     year: Number,
-    price: Number
-})
+    price: Number,
+    file: {
+        type: String,
+        default: 'noimg.jpg'
+    }
+}, { timestamps: true })
 
 module.exports = mongoose.model('books', bookSchema)

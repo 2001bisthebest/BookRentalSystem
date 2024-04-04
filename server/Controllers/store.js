@@ -42,3 +42,13 @@ exports.storeInfo = async (req, res) => {
         res.status(500).send('Server Error')
     }
 }
+exports.editStoreInfo = async (req, res) => {
+    try {
+        const id = req.params.id
+        const storeInfo = await Store.findOneAndUpdate({ _id: id }, req.body, { new: true }).exec()
+        res.send(storeInfo)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}

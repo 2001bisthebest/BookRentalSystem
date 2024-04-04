@@ -1,14 +1,22 @@
 import axios from 'axios'
-import React, { useState } from 'react'
-import MediaQuery from 'react-responsive'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const RegisterPage = () => {
-
     const [form, setForm] = useState({})
     const navigate = useNavigate()
+    const [category, setCategory] = useState([])
+    useEffect(() => {
+        loadData()
+    }, [])
+    const loadData = async () => {
+        await axios.get(process.env.REACT_APP_API + '/listcategory')
+            .then(res => {
+                console.log(res.data)
+                setCategory(res.data)
+            })
+    }
     const handleChange = (e) => {
-
         if (e.target.name === 'file') {
             setForm({
                 ...form,
@@ -20,6 +28,10 @@ const RegisterPage = () => {
                 [e.target.name]: e.target.value
             })
         }
+    }
+    const handleClick = async (e) => {
+        e.preventDefault()
+        console.log(e.target.value)
     }
 
     const handleSubmit = async (e) => {
@@ -50,106 +62,42 @@ const RegisterPage = () => {
     }
 
     return (
-        <div className='bg-dark-purple w-screen h-screen flex flex-col gap-10 justify-center items-center'>
+        <div className='bg-dark-purple w-full h-full lg:h-screen grid grid-cols-1 gap-10 justify-center items-center pt-10 pb-10 font-noto-sans-thai'>
             <div>
-                <h1 className='text-white text-6xl font-bold'>Little Reader</h1>
+                <h1 className='text-white text-5xl md:text-6xl font-bold'>Little Reader</h1>
             </div>
             <form className='w-full flex justify-center' onSubmit={handleSubmit} encType='multipart/form-data'>
-                <MediaQuery minWidth={1284}>
-                    {(matches) => matches ?
-                        <div className='flex flex-col gap-10 items-center w-1/2 bg-white-bg rounded-2xl'>
-                            <div className='w-full px-10 pt-10 flex  justify-center gap-20'>
-                                <div className='flex flex-col gap-5'>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Username</p>
-                                        <input type='text' name='username' className='p-1' placeholder='littleReader123' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Password</p>
-                                        <input type='password' name='password' className='p-1' placeholder='password' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Name</p>
-                                        <input type='text' name='name' className='p-1' placeholder='name' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>E-mail</p>
-                                        <input type='text' name='email' className='p-1' placeholder='example@littlereader.com' onChange={e => handleChange(e)} />
-                                    </div>
-                                </div>
-                                <div className='flex flex-col gap-5'>
-                                    <div className='flex flex-row gap-5 grow items-center'>
-                                        <p>Address</p>
-                                        <input type='text' name='address' className='p-1' placeholder='xx/xx Bangkok 1xxxx' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Telephone</p>
-                                        <input type='number' name='telephone' className='p-1' placeholder='0xx-xxx-xxxx' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Type of book that you like</p>
-                                        <select name='typeofbook' onChange={e => handleChange(e)}>
-                                            <option value="fiction">fiction</option>
-                                            <option value="nonfiction">non-fiction</option>
-                                        </select>
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>profile</p>
-                                        <input type='file' name='file' onChange={e => handleChange(e)} />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='pb-10'>
-                                <button type='submit' className='bg-light-purple opacity-75 p-4 rounded-lg hover:opacity-100'><p className='text-white'>Register Now</p></button>
-                            </div>
+                <div className='flex flex-col gap-10 lg:gap-3 items-center w-1/2 bg-white-bg rounded-2xl'>
+                    <div className='grid grid-cols-3 justify-items-start content-center gap-5 p-10 lg:p-20'>
+                        <p>Username</p>
+                        <input type='text' name='username' className='p-1 w-full col-span-2 border border-gray-400 rounded-lg' placeholder='littleReader123' onChange={e => handleChange(e)} />
+                        <p>Password</p>
+                        <input type='password' name='password' className='p-1 w-full col-span-2 border border-gray-400 rounded-lg' placeholder='password' onChange={e => handleChange(e)} />
+                        <p>ชื่อ</p>
+                        <input type='text' name='name' className='p-1 w-full col-span-2 border border-gray-400 rounded-lg' placeholder='name' onChange={e => handleChange(e)} />
+                        <p>E-mail</p>
+                        <input type='text' name='email' className='p-1 w-full col-span-2 border border-gray-400 rounded-lg' placeholder='example@littlereader.com' onChange={e => handleChange(e)} />
+                        <p>ที่อยู่</p>
+                        <input type='text' name='address' className='p-1 w-full col-span-2 border border-gray-400 rounded-lg' placeholder='xx/xx Bangkok 1xxxx' onChange={e => handleChange(e)} />
+                        <p>เบอร์โทร</p>
+                        <input type='number' name='telephone' className='p-1 w-full col-span-2 border border-gray-400 rounded-lg' placeholder='0xx-xxx-xxxx' onChange={e => handleChange(e)} />
+                        <p>หนังสือที่สนใจ</p>
+                        {/* <select name='typeofbook' onChange={e => handleChange(e)}>
+                            <option value="fiction">fiction</option>
+                            <option value="nonfiction">non-fiction</option>
+                        </select> */}
+                        <div className='w-full grid grid-cols-2 col-span-2'>
+                            {category ? category.map((item) =>
+                                <button type='button' className='border border-dark-purple m-1 text-sm rounded' key={item._id} value={item._id} onClick={e => handleClick(e)}>{item.name}</button>
+                            ) : 'eiei'}
                         </div>
-                        :
-                        <div className='flex flex-col gap-10 items-center w-1/2 bg-white-bg rounded-2xl'>
-                            <div className='w-full px-10 pt-10 flex  justify-center gap-20'>
-                                <div className='flex flex-col gap-5'>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Username</p>
-                                        <input type='text' name='username' className='p-1' placeholder='littleReader123' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Password</p>
-                                        <input type='password' name='password' className='p-1' placeholder='password' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Name</p>
-                                        <input type='text' name='name' className='p-1' placeholder='name' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>E-mail</p>
-                                        <input type='text' name='email' className='p-1' placeholder='example@littlereader.com' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 grow items-center'>
-                                        <p>Address</p>
-                                        <input type='text' name='address' className='p-1' placeholder='xx/xx Bangkok 1xxxx' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Telephone</p>
-                                        <input type='number' name='telephone' className='p-1' placeholder='0xx-xxx-xxxx' onChange={e => handleChange(e)} />
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>Type of book that you like</p>
-                                        <select name='typeofbook' onChange={e => handleChange(e)}>
-                                            <option value="fiction">fiction</option>
-                                            <option value="nonfiction">non-fiction</option>
-                                        </select>
-                                    </div>
-                                    <div className='flex flex-row gap-5 items-center'>
-                                        <p>profile</p>
-                                        <input type='file' name='file' onChange={e => handleChange(e)} />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='pb-10'>
-                                <button type='submit' className='bg-light-purple opacity-75 p-4 rounded-lg hover:opacity-100'><p className='text-white'>Register Now</p></button>
-                            </div>
-                        </div>
-                    }
-                </MediaQuery>
+                        <p>รูป profile</p>
+                        <input type='file' name='file' onChange={e => handleChange(e)} />
+                    </div>
+                    <div className='pb-10'>
+                        <button type='submit' className='bg-light-purple opacity-75 p-4 rounded-lg hover:opacity-100 font-semibold'><p className='text-white'>Register Now</p></button>
+                    </div>
+                </div>
             </form>
         </div>
     )

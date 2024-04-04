@@ -17,8 +17,8 @@ const bookCopySchema = mongoose.Schema({
     },
     status: {
         type: Boolean,
-        default: true
+        default: false
     }
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('bookcopies', bookCopySchema)

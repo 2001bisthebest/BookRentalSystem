@@ -13,6 +13,7 @@ connectDB()
 app.use(morgan('dev'))
 app.use(cors())
 app.use(bodyParse.json({ limit: '10mb' }))
+app.use('/img', express.static('uploads'))
 
 // const productRouter = require('./Routes/product')
 

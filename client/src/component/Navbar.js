@@ -19,7 +19,7 @@ const Navbar = () => {
     const haveStore = user.user.haveStore
     return (
         <div className='flex w-full h-18 px-4 py-2 bg-dark-purple justify-between items-center'>
-            <div className='text-white'>
+            <div className='text-white font-semibold '>
                 <Link to={'/'}><p>Little Reader</p></Link>
             </div>
             <div className='flex justify-between items-center gap-5'>
@@ -31,8 +31,8 @@ const Navbar = () => {
                 <button onClick={openMenu}>
                     <UserSVG />
                     {isClick ?
-                        (<div className='absolute top-18 right-4 m-1 p-2 flex flex-col items-center gap-2 w-40 bg-light-purple text-white rounded-lg'>
-                            <a href='/personalinfo'>profile</a>
+                        (<div className='absolute top-18 right-4 m-1 p-2 flex flex-col items-center gap-2 w-40 bg-light-purple text-white rounded-lg z-40'>
+                            {user.user.token ? <a href='/personalinfo'>สมาชิก</a> : <a href='login'>เข้าสู่ระบบ</a>}
                             <hr className='w-3/4' />
                             <a>สถานะหนังสือ</a>
                             <hr className='w-3/4' />

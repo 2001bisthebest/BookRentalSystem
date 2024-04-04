@@ -24,6 +24,10 @@ const storeSchema = mongoose.Schema({
     numberOfDayForShipping: {
         type: Number,
         default: 0
+    },
+    file: {
+        type: String,
+        default: 'noprofile.jpg'
     }
-})
+}, { timestamps: true })
 module.exports = mongoose.model('stores', storeSchema)

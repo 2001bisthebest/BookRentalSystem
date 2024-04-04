@@ -33,7 +33,7 @@ const LoginPage = () => {
         }).catch(err => console.log(err))
     }
     return (
-        <div className='bg-dark-purple w-screen h-screen flex flex-col gap-10 justify-center items-center'>
+        <div className='bg-dark-purple w-screen h-screen flex flex-col gap-10 justify-center items-center font-noto-sans-thai'>
             <form className='flex flex-col gap-10' onSubmit={handleSubmit}>
                 <div>
                     <h1 className='text-white text-5xl md:text-6xl font-bold'>Little Reader</h1>

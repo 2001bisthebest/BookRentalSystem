@@ -5,17 +5,15 @@ import Sidebar from '../component/Sidebar'
 
 const GeneralRoute = ({ children }) => {
     return (
-        <div className='grid grid-row-1 w-full h-screen'>
-            <div className='w-full h-full'>
+        <div className='grid grid-cols-4 lg:grid-cols-5 w-full h-screen font-noto-sans-thai'>
+            <div className='col-span-full w-full h-full'>
                 <Navbar />
             </div>
-            <div className='flex w-full h-screen'>
-                <Sidebar />
-                <div className="w-full h-full">
-                    {children}
-                </div>
+            <Sidebar />
+            <div className="col-span-3 lg:col-span-4 w-full h-full">
+                {children}
             </div>
-            <div className='w-full h-full'>
+            <div className='col-span-full w-full h-full'>
                 <Footer />
             </div>
         </div>

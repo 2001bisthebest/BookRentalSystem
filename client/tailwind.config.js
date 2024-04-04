@@ -2,6 +2,8 @@
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/react-tailwindcss-datepicker/dist/index.esm.js",
   ],
   theme: {
     extend: {
@@ -10,6 +12,12 @@ module.exports = {
         'light-purple': '#917FB3',
         'white-snow': '#FFFAFA',
         'white-bg': '#FAF9F6',
+        'light-gray': '#D9D9D9',
+        'red-btn': '#E95757',
+        'green-btn': '#5DD971'
+      },
+      fontFamily: {
+        'noto-sans-thai': ['"Noto Sans Thai"', 'sans-serif']
       },
     },
     container: {

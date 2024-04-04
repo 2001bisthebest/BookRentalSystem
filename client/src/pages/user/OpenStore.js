@@ -1,18 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { currentUser } from '../../functions/auth'
+import { currentAdmin } from '../../functions/auth'
 import { addStore } from '../../functions/store'
 import { openStore as openStoreFn } from '../../functions/user'
 
 const OpenStore = () => {
     const { user } = useSelector((state) => ({ ...state }))
+    const [admin, setAdmin] = useState({})
     const navigate = useNavigate()
-    currentUser(user.user.token).then(res => console.log(res))
-    const openStore = () => {
-        addStore(user.user.id, user.user.token).catch(err => console.log(err))
-        openStoreFn(user.user.id, user.user.token).catch(err => console.log(err))
-        navigate('/storeinfo')
+    // currentUser(user.user.token).then(res => console.log('datafrom ', res))
+    const openStore = async () => {
+        await addStore(user.user.id, user.user.token).catch(err => console.log(err))
+        await openStoreFn(user.user.id, user.user.token).catch(err => console.log(err))
+        await currentAdmin(user.user.token, user.user.username).then(res => setAdmin(res.data)).catch((err) => console.log(err))
+        console.log(admin._id)
+        navigate('/storeinfo/' + admin._id)
     }
     return (
         <div className="w-full h-screen grow py-8 border flex flex-col justify-center gap-4 bg-white-bg items-center">

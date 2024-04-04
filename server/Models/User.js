@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-
+const catagory = require('./Category')
 const userSchema = mongoose.Schema({
     username: String,
     password: {
@@ -9,16 +9,17 @@ const userSchema = mongoose.Schema({
     email: String,
     address: String,
     telephone: Number,
-    typeofbook: {
-        type: String
-    },
+    typeofbook: [{
+        type: mongoose.Schema.ObjectId,
+        ref: catagory
+    }],
     haveStore: {
         type: Boolean,
         default: false
     },
     file: {
         type: String,
-        default: 'noimage.jpg'
+        default: 'noprofile.jpg'
     }
-}, { timestamp: true })
+}, { timestamps: true })
 module.exports = mongoose.model('users', userSchema)

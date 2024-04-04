@@ -2,11 +2,10 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import PlusSVG from '../../SVG/PlusSVG'
-import ListItems from '../../component/list/ListItems'
 import AddBook from '../../component/modal/AddBook'
 
 const StorePersonalInfo = () => {
-    const [data, setData] = useState([])
+    const [book, setBook] = useState([])
     const { admin } = useSelector((state) => ({ ...state }))
     const idStore = admin.admin.id
     useEffect(() => {
@@ -14,7 +13,7 @@ const StorePersonalInfo = () => {
     }, [idStore])
     const loadData = async () => {
         await axios.get(process.env.REACT_APP_API + '/listbook/' + idStore).then(res => {
-            setData(res.data)
+            setBook(res.data)
         }).catch(err => console.log(err))
     }
     const [isOpen, setOpen] = useState(false)
@@ -28,9 +27,11 @@ const StorePersonalInfo = () => {
                     <div className='bg-gray rounded w-40 h-40'>
                         <h1>A</h1>
                     </div>
-                    <div className='flex flex-col justify-center items-start gap-2'>
+                    <div className='grid grid-cols-2 justify-items-start gap-2'>
                         <p>Store name</p>
-                        <p>detail</p>
+                        <p>name</p>
+                        <p>รายละเอียดร้านค้า</p>
+                        <p>eiei</p>
                     </div>
                 </div>
                 <div className='flex flex-col gap-5 justify-center items-start px-20'>
@@ -42,7 +43,29 @@ const StorePersonalInfo = () => {
                                 <p>Add</p>
                             </button>
                         </div>
-                        <ListItems children={data} />
+                        <div className='w-full h-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-10'>
+                            {book ? book.map(item =>
+                                <div className='relative flex flex-col gap-2'>
+                                    <div className='absolute top-2 right-2 w-12 h-6 rounded bg-[#5DD971] text-white drop-shadow-md'>
+                                        <p>ว่าง</p>
+                                    </div>
+                                    <a href={`/book/${item._id}`} className='border w-40 h-40 bg-gray'></a>
+                                    <div className='flex flex-col gap-1'>
+                                        <p>{item.title}</p>
+                                        <p>{item.price}</p>
+                                    </div>
+                                </div>
+                            )
+                                :
+                                <div className='flex flex-col gap-2'>
+                                    {/* <div className='border w-40 h-40 bg-gray'>
+                        <button>
+                            <p>Add book</p>
+                        </button>
+                    </div> */}
+                                </div>
+                            }
+                        </div>
                     </div>
 
                 </div>
@@ -54,7 +77,7 @@ const StorePersonalInfo = () => {
                             <p>Add</p>
                         </button>
                     </div>
-                    <ListItems />
+                    {/* <ListItems /> */}
                 </div>
             </div>
             <AddBook props={isOpen} />

@@ -6,30 +6,19 @@ const Store = require('../Models/Store')
 exports.register = async (req, res) => {
     try {
         //1. check user
-        // const { username, password, name, email, address, telephone, typeofbook, file } = req.body
-
-        var data = req.body
-        console.log('body ', req.body)
-        console.log('file', req.file)
-        const username = data.username
-        const password = data.password
-        const name = data.name
-        const email = data.email
-        const address = data.address
-        const telephone = data.telephone
-        const typeofbook = data.typeofbook
-        var file
-        // console.log('eiei', req.file)
-
-        if (req.file) {
-            data.file = req.file.filename
-        }
-        console.log(data)
+        const { username, password, name, email, address, telephone, typeofbook } = req.body
         // var data = req.body
-        // if (req.file) {
-        //     data.file = req.file.filename
-        // }
-        // console.log(data)
+        // const username = data.username
+        // const password = data.password
+        // const name = data.name
+        // const email = data.email
+        // const address = data.address
+        // const telephone = data.telephone
+        // const typeofbook = data.typeofbook
+        var file
+        if (req.file) {
+            file = req.file.filename
+        }
         var user = await User.findOne({ username })
         // console.log(req.body)
         if (user) {
