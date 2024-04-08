@@ -14,7 +14,8 @@ module.exports = {
         'white-bg': '#FAF9F6',
         'light-gray': '#D9D9D9',
         'red-btn': '#E95757',
-        'green-btn': '#5DD971'
+        'green-btn': '#5DD971',
+        'yellow-btn': '#C2B11D'
       },
       fontFamily: {
         'noto-sans-thai': ['"Noto Sans Thai"', 'sans-serif']

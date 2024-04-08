@@ -50,7 +50,6 @@ const RegisterPage = () => {
             email: formWithImgData.get("email"),
             address: formWithImgData.get("address"),
             telephone: formWithImgData.get("telephone"),
-            typeofbook: formWithImgData.get("typeofbook"),
             file: formWithImgData.get("file"),
         };
         console.log(register)

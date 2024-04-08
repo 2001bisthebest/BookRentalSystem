@@ -30,9 +30,9 @@ const AllBooksPage = () => {
                     {book ? book.map(item =>
                         <div className='flex flex-col gap-4 items-center'>
                             <div className='relative w-40 h-40'>
-                                <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
+                                {/* <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
                                     <p>ว่าง</p>
-                                </div>
+                                </div> */}
                                 <a href={`/book/${item._id}`} className='w-full h-full'>{item.file ? <img src={process.env.REACT_APP_IMG + "/" + item.file} className='w-full h-full rounded-lg drop-shadow-md'></img> : ""}</a>
                             </div>
                             <div className='flex flex-col gap-1'>

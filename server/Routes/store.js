@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { list, addStore, editStoreInfo } = require('../Controllers/store')
+const { list, addStore, editStoreInfo, storeInfo } = require('../Controllers/store')
 const { auth } = require('../Middleware/auth')
+const { upload } = require('../Middleware/upload')
 
 router.get('/storelist', list)
 router.post('/addstore/:id', auth, addStore)
-router.put('/editstoreinfo/:id', auth, editStoreInfo)
+router.put('/editstoreinfo/:id', auth, upload, editStoreInfo)
+router.get('/storeinfo/:id', storeInfo)
 module.exports = router

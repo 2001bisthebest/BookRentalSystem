@@ -1,0 +1,55 @@
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import BasketSVG from '../SVG/BasketSVG.js'
+import SearchSVG from '../SVG/SearchSVG.js'
+import UserSVG from '../SVG/UserSVG.js'
+
+const Navbar = () => {
+    const [isClick, setIsClick] = useState(false)
+    const openMenu = () => {
+        if (!isClick) {
+            setIsClick(true)
+        } else {
+            setIsClick(false)
+        }
+    }
+    const { user } = useSelector((state) => ({ ...state }))
+    const { admin } = useSelector((state) => ({ ...state }))
+    const idUser = user.user.id
+    const haveStore = user.user.haveStore
+    return (
+        <div className='flex w-full h-18 px-4 py-2 bg-dark-purple justify-between items-center'>
+            <div className='text-white font-semibold '>
+                <Link to={'/'}><p>Little Reader</p></Link>
+            </div>
+            <div className='flex justify-between items-center gap-5'>
+                <div className='flex justify-between items-center bg-light-purple rounded-full px-2'>
+                    <input className='h-10 bg-light-purple rounded-full' />
+                    <SearchSVG />
+                </div>
+                <BasketSVG />
+                <button onClick={openMenu}>
+                    <UserSVG />
+                    {isClick ?
+                        (<div className='absolute top-18 right-4 m-1 p-2 flex flex-col items-center gap-2 w-40 bg-light-purple text-white rounded-lg z-40'>
+                            <a href={'/storeinfo/' + admin.admin.id}>ข้อมูลร้านเช่า</a>
+                            <hr className='w-3/4' />
+                            <a href={'/statusbookadmin/' + admin.admin.id}>ยอดที่ต้องตรวจสอบ</a>
+                            <hr className='w-3/4' />
+                            <a href='/allqueuebookadmin'>คิวหนังสือของฉัน</a>
+                            <hr className='w-3/4' />
+                            {user.user.token ? <div className='w-full flex flex-col items-center'><a href='/personalinfo'>ผู้เช่ายืม</a><hr className='w-3/4' /></div> : ''}
+                            {user.user.token ? <p>ออกจากระบบ</p> : <a href='/login'>เข้าสู่ระบบ</a>}
+                        </div>)
+                        :
+                        (<div>
+
+                        </div>)}
+                </button>
+            </div>
+        </div>
+    )
+}
+
+export default Navbar

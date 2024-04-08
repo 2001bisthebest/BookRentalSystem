@@ -9,10 +9,6 @@ const userSchema = mongoose.Schema({
     email: String,
     address: String,
     telephone: Number,
-    typeofbook: [{
-        type: mongoose.Schema.ObjectId,
-        ref: catagory
-    }],
     haveStore: {
         type: Boolean,
         default: false

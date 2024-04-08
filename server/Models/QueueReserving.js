@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const bookCopy = require('./BookCopy')
 const user = require('./User')
+const book = require('./Book')
+const Store = require('./Store')
 
 
 const queueReservingSchema = mongoose.Schema({
@@ -11,6 +13,14 @@ const queueReservingSchema = mongoose.Schema({
     CopyId: {
         type: mongoose.Schema.ObjectId,
         ref: bookCopy
+    },
+    BookId: {
+        type: mongoose.Schema.ObjectId,
+        ref: book
+    },
+    StoreId: {
+        type: mongoose.Schema.ObjectId,
+        ref: Store
     },
     reservationStatus: {
         type: Boolean,

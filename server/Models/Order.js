@@ -16,14 +16,20 @@ const orderSchema = mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: store
     },
-    status: {
+    statusOrder: {
         type: Boolean,
         default: false
     },
+    price: Number,
     shippingFromStoreDate: Date,
     shippingFromCustomerDate: Date,
     trackNumberFromStore: Number,
     shippingNameFromStore: String,
     shippingNameFromCustomer: String,
+    file: String,
+    statusPaid: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true })
 module.exports = mongoose.model('order', orderSchema)

@@ -8,55 +8,65 @@ const ReservationPage = () => {
     const [book, setBook] = useState({})
     const [bookCopy, setBookCopy] = useState([])
     const { id } = useParams()
+    const [queueFullList, setQueueFullList] = useState([])
     const [value, setValue] = useState({
         startDate: new Date(),
-        endDate: new Date().setMonth(11)
+        endDate: new Date().setMonth(3)
     });
     const navigate = useNavigate()
     const { user } = useSelector((state) => ({ ...state }))
-    console.log(value)
     const handleValueChange = (newValue) => {
-        console.log("newValue:", newValue);
         setValue(newValue);
     }
-
     useEffect(() => {
         loadData()
+        loadQueueFull()
     }, [id])
     const loadData = async () => {
-        await axios.get(process.env.REACT_APP_API + '/showbookinfo/' + id)
+        await axios.get(process.env.REACT_APP_API + '/showbookinfopopstore/' + id)
             .then(res => {
                 setBook(res.data)
-                console.log(res.data)
             })
             .catch(err => console.log(err))
         await axios.get(process.env.REACT_APP_API + '/listbookcopy/' + id)
             .then(res => {
                 setBookCopy(res.data)
-                console.log(res)
             })
             .catch(err => console.log(err))
     }
+    const loadQueueFull = async () => {
+        await axios.get(process.env.REACT_APP_API + '/queuefulllist/' + id)
+            .then(res => {
+                setQueueFullList(res.data)
+            })
+    }
+    console.log(queueFullList)
     const checkStatus = () => {
         return bookCopy.every(item => item.status === true)
     }
     const queueReserveCreate = async (value) => {
-        await axios.put(process.env.REACT_APP_API + '/createqueue/' + id, value)
-            // { startDate: value.startDate, endDate: value.endDate }
+        await axios.put(process.env.REACT_APP_API + '/createqueue/' + id, value, {
+            headers: {
+                authtoken: user.user.token
+            }
+        })
             .then(res => {
                 console.log(res)
+                navigate('/cart/' + user.id)
             })
-            .catch(err => console.log(err))
-        navigate('/cart/' + user.id)
+            .catch(err => {
+                console.log(err)
+                alert('Please select date again')
+            })
+
     }
     return (
         <div className="w-full h-full grow py-8 flex flex-col justify-start gap-10 bg-white-bg">
             <div className='place-self-start px-20'>
                 <h1 className='font-bold text-3xl'>{book.title}</h1>
             </div>
-            <div className='flex justify-start items-center gap-20 px-24'>
-                <div className='bg-light-gray w-60 h-60 rounded-lg '>
-                </div>
+            <div className='flex flex-col lg:flex-row justify-start items-center gap-20 px-24'>
+                <img src={process.env.REACT_APP_IMG + '/' + book.file} className='w-60 h-60 rounded-lg' />
                 <div className='flex flex-col justify-center items-start gap-2'>
                     <p>รายละเอียดหนังสือ : </p>
                     <div className='grid grid-cols-2 justify-items-start gap-1 px-2'>
@@ -72,8 +82,8 @@ const ReservationPage = () => {
                         <p>{book.price}</p>
                         <p>สถานะ</p>
                         {checkStatus() ?
-                            <div className='w-14 h-6 rounded bg-red-btn text-white drop-shadow-md px-1'>
-                                <p>ไม่ว่าง</p>
+                            <div className='w-14 h-6 rounded bg-yellow-btn text-white drop-shadow-md px-1'>
+                                <p>รอคิว</p>
                             </div>
                             :
                             <div className='w-12 h-6 rounded bg-green-btn text-white drop-shadow-md'>
@@ -85,8 +95,9 @@ const ReservationPage = () => {
             <div className='place-self-start px-20'>
                 <h1 className='font-bold text-xl'>เลือกวันเวลาที่ต้องการจอง</h1>
             </div>
-            <div className='grid grid-cols-2 justify-items-start px-24 gap-5'>
+            <div className='grid grid-cols-2 justify-items-start px-24 gap-5 z-40'>
                 <Datepicker
+                    disabledDates={queueFullList}
                     primaryColor={"purple"}
                     value={value}
                     onChange={handleValueChange}

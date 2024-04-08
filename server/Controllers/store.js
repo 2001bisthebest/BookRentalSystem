@@ -36,7 +36,9 @@ exports.addStore = async (req, res) => {
 }
 exports.storeInfo = async (req, res) => {
     try {
-        console.log(req.body)
+        const id = req.params.id
+        const storeInfo = await Store.findOne({ _id: id }).exec()
+        res.send(storeInfo)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')
@@ -45,7 +47,20 @@ exports.storeInfo = async (req, res) => {
 exports.editStoreInfo = async (req, res) => {
     try {
         const id = req.params.id
-        const storeInfo = await Store.findOneAndUpdate({ _id: id }, req.body, { new: true }).exec()
+        const { name, address, telephone, detailStore, numberOfDayForShipping } = req.body
+        var file
+        if (req.file) {
+            file = req.file.filename
+        }
+        console.log(req.file)
+        const storeInfo = await Store.findOneAndUpdate({ _id: id }, {
+            name: name,
+            address: address,
+            telephone: telephone,
+            detailStore: detailStore,
+            numberOfDayForShipping: numberOfDayForShipping,
+            file: file
+        }, { new: true }).exec()
         res.send(storeInfo)
     } catch (err) {
         console.log(err)

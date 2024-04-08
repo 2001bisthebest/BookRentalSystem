@@ -6,21 +6,12 @@ const Store = require('../Models/Store')
 exports.register = async (req, res) => {
     try {
         //1. check user
-        const { username, password, name, email, address, telephone, typeofbook } = req.body
-        // var data = req.body
-        // const username = data.username
-        // const password = data.password
-        // const name = data.name
-        // const email = data.email
-        // const address = data.address
-        // const telephone = data.telephone
-        // const typeofbook = data.typeofbook
+        const { username, password, name, email, address, telephone } = req.body
         var file
         if (req.file) {
             file = req.file.filename
         }
         var user = await User.findOne({ username })
-        // console.log(req.body)
         if (user) {
             return res.send('User Alredy Exists!!!').status(400)
         }
@@ -33,7 +24,6 @@ exports.register = async (req, res) => {
             email,
             address,
             telephone,
-            typeofbook,
             file
         })
         console.log(user)

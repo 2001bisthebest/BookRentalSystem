@@ -1,5 +1,6 @@
 const Book = require("../Models/Book")
 const BookCopy = require("../Models/BookCopy")
+const BookPreference = require("../Models/BookPreference")
 const Category = require("../Models/Category")
 const CategoryOfBook = require("../Models/CategoryOfBook")
 
@@ -42,6 +43,16 @@ exports.showBookInfo = async (req, res) => {
     try {
         const bookId = req.params.id
         const bookInfo = await Book.findOne({ _id: bookId }).exec()
+        res.send(bookInfo)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.showBookInfoPoppulateStore = async (req, res) => {
+    try {
+        const bookId = req.params.id
+        const bookInfo = await Book.findOne({ _id: bookId }).populate("storeId").exec()
         res.send(bookInfo)
     } catch (err) {
         console.log(err)
@@ -146,6 +157,20 @@ exports.listCategoryOfBook = async (req, res) => {
         const categoryInfo = await Category.findOne({ name: category }).exec()
         const listCategoryOfBook = await CategoryOfBook.find({ categoryId: categoryInfo._id }).populate("bookId").exec()
         res.send(listCategoryOfBook)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.addBookPref = async (req, res) => {
+    try {
+        const accId = req.params.id
+        const { CategoryId } = req.body
+        const bookPref = await new BookPreference({
+            AccId: accId,
+            CategoryId: CategoryId
+        }).save()
+        res.send(bookPref)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')

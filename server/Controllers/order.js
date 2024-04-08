@@ -4,10 +4,11 @@ const QueueReserving = require("../Models/QueueReserving")
 exports.addOrder = async (req, res) => {
     try {
         const { queueId, shippingFromStoreDate, shippingFromCustomerDate, trackNumberFromStore, shippingNameFromStore, shippingNameFromCustomer } = req.body
-        const queue = await QueueReserving.findOneAndUpdate({ _id: queueId }, { staus: true }).exec()
+        const queue = await QueueReserving.findOne({ _id: queueId }).exec()
         const order = await new Order({
             AccId: queue.AccId,
             CopyId: queue.CopyId,
+            StoreId: queue.StoreId,
             shippingFromStoreDate: shippingFromStoreDate,
             shippingFromCustomerDate: shippingFromCustomerDate,
             trackNumberFromStore: trackNumberFromStore,

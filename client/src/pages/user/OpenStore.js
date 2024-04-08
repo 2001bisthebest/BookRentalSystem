@@ -14,7 +14,6 @@ const OpenStore = () => {
         await addStore(user.user.id, user.user.token).catch(err => console.log(err))
         await openStoreFn(user.user.id, user.user.token).catch(err => console.log(err))
         await currentAdmin(user.user.token, user.user.username).then(res => setAdmin(res.data)).catch((err) => console.log(err))
-        console.log(admin._id)
         navigate('/storeinfo/' + admin._id)
     }
     return (

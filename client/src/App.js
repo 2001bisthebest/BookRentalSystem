@@ -2,6 +2,9 @@ import { useDispatch } from 'react-redux';
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom';
 import './App.css';
 import { currentAdmin, currentUser } from './functions/auth';
+import AllQueueBook from './pages/admin/AllQueueBook';
+import QueueBook from './pages/admin/QueueBook';
+import StatusBookAdmin from './pages/admin/StatusBook';
 import StorePersonalInfo from './pages/admin/StorePersonalInfo';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -28,7 +31,6 @@ function App() {
   console.log('token', token)
   if (token) {
     currentUser(token).then(res => {
-      // console.log(res)
       dispatch(loginUser({
         username: res.data.username,
         id: res.data._id,
@@ -44,6 +46,7 @@ function App() {
           }))
         })
       }
+      // localStorage.clear()
     }).catch(err => console.log(err))
   }
 
@@ -107,6 +110,21 @@ function App() {
             <UserRoute>
               <StatusBook />
             </UserRoute>
+          } />
+          <Route path='/statusbookadmin/:id' element={
+            <AdminRoute>
+              <StatusBookAdmin />
+            </AdminRoute>
+          } />
+          <Route path='/queuebookadmin' element={
+            <AdminRoute>
+              <QueueBook />
+            </AdminRoute>
+          } />
+          <Route path='/allqueuebookadmin' element={
+            <AdminRoute>
+              <AllQueueBook />
+            </AdminRoute>
           } />
         </Routes>
       </div>
