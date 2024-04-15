@@ -12,7 +12,8 @@ export const adminSlice = createSlice({
             state.admin = action.payload
         },
         logout: (state) => {
-            state.admin = 'logout'
+            state.admin = []
+            localStorage.clear()
         },
     },
 })

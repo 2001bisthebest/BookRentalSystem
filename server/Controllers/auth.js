@@ -30,7 +30,8 @@ exports.register = async (req, res) => {
         user.password = await bcrypt.hash(password, salt)
         //3.save
         await user.save()
-        res.send('Register success')
+        const userInfo = await User.findOne({ _id: user._id }).select('_id').exec()
+        res.send(userInfo)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')
@@ -70,7 +71,7 @@ exports.login = async (req, res) => {
             }
 
             //3. Generate token
-            jwt.sign(payload, 'jwtsecret', { expiresIn: '1d' }, (err, token) => {
+            jwt.sign(payload, 'jwtsecret', { expiresIn: '1h' }, (err, token) => {
                 if (err) throw err;
                 res.json({ token, payload })
             })

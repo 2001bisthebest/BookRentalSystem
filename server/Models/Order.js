@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const user = require('./User')
 const bookCopy = require('./BookCopy')
 const store = require('./Store')
+const queue = require('./QueueReserving')
 
 const orderSchema = mongoose.Schema({
     AccId: {

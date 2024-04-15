@@ -14,7 +14,7 @@ const ReservationPage = () => {
         endDate: new Date().setMonth(3)
     });
     const navigate = useNavigate()
-    const { user } = useSelector((state) => ({ ...state }))
+    const { user } = useSelector((state) => (state.user))
     const handleValueChange = (newValue) => {
         setValue(newValue);
     }
@@ -45,9 +45,9 @@ const ReservationPage = () => {
         return bookCopy.every(item => item.status === true)
     }
     const queueReserveCreate = async (value) => {
-        await axios.put(process.env.REACT_APP_API + '/createqueue/' + id, value, {
+        await axios.put(process.env.REACT_APP_API + '/createqueue/' + id, { AccId: user.id, startDate: value.startDate, endDate: value.endDate }, {
             headers: {
-                authtoken: user.user.token
+                authtoken: user.token
             }
         })
             .then(res => {
@@ -61,7 +61,7 @@ const ReservationPage = () => {
 
     }
     return (
-        <div className="w-full h-full grow py-8 flex flex-col justify-start gap-10 bg-white-bg">
+        <div className="w-full h-screen grow py-8 flex flex-col justify-start gap-10 bg-white-bg">
             <div className='place-self-start px-20'>
                 <h1 className='font-bold text-3xl'>{book.title}</h1>
             </div>

@@ -4,12 +4,12 @@ import { currentUser } from '../../functions/auth'
 
 export const PersonalInfo = () => {
     const [data, setData] = useState({})
-    const { user } = useSelector((state) => ({ ...state }))
-    const token = user.user.token
+    const { user } = useSelector((state) => (state.user))
+    const token = user.token
 
     useEffect(() => {
         currentUser(token).then(res => setData(res.data))
-    }, [user.user.id])
+    }, [user.id])
     console.log(data.file)
     return (
         <div className="w-full h-full grow py-20 border flex flex-col items-center gap-8 bg-white-bg">

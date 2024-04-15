@@ -6,15 +6,20 @@ import { addStore } from '../../functions/store'
 import { openStore as openStoreFn } from '../../functions/user'
 
 const OpenStore = () => {
-    const { user } = useSelector((state) => ({ ...state }))
+    const { user } = useSelector((state) => (state.user))
     const [admin, setAdmin] = useState({})
     const navigate = useNavigate()
     // currentUser(user.user.token).then(res => console.log('datafrom ', res))
+
     const openStore = async () => {
-        await addStore(user.user.id, user.user.token).catch(err => console.log(err))
-        await openStoreFn(user.user.id, user.user.token).catch(err => console.log(err))
-        await currentAdmin(user.user.token, user.user.username).then(res => setAdmin(res.data)).catch((err) => console.log(err))
-        navigate('/storeinfo/' + admin._id)
+        try {
+            await addStore(user.id, user.token).catch(err => console.log(err))
+            await openStoreFn(user.id, user.token).catch(err => console.log(err))
+            await currentAdmin(user.token, user.username).then(res => setAdmin(res.data)).catch((err) => console.log(err))
+            navigate('/storeinfo/' + admin._id)
+        } catch (err) {
+            console.log(err)
+        }
     }
     return (
         <div className="w-full h-screen grow py-8 border flex flex-col justify-center gap-4 bg-white-bg items-center">

@@ -26,6 +26,10 @@ const queueReservingSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    createOrderStatus: {
+        type: Boolean,
+        default: false
+    },
     startDate: {
         type: Date,
         default: Date.now

@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const RegisterPage = () => {
-    const [form, setForm] = useState({})
+    const [form, setForm] = useState({ bookPref: [] })
     const navigate = useNavigate()
     const [category, setCategory] = useState([])
+    const [userId, setUserId] = useState({})
+    // const [isClick, setIsClick] = useState(false)
     useEffect(() => {
         loadData()
     }, [])
@@ -17,26 +19,41 @@ const RegisterPage = () => {
             })
     }
     const handleChange = (e) => {
-        if (e.target.name === 'file') {
+        const { name, value, type, checked, files } = e.target;
+        if (type === 'file') {
             setForm({
                 ...form,
-                [e.target.name]: e.target.files[0]
-            })
+                [name]: files[0]
+            });
+        } else if (type === 'checkbox') {
+            if (name === 'bookPref') {
+                const newSet = new Set(form.bookPref || []);
+                if (checked) {
+                    newSet.add(value);
+                } else {
+                    newSet.delete(value);
+                }
+                setForm({
+                    ...form,
+                    [name]: Array.from(newSet)
+                });
+            }
         } else {
             setForm({
                 ...form,
-                [e.target.name]: e.target.value
-            })
+                [name]: value
+            });
         }
     }
-    const handleClick = async (e) => {
-        e.preventDefault()
-        console.log(e.target.value)
-    }
+    // const handleClick = async (e) => {
+    //     e.preventDefault()
+    //     setIsClick(!isClick)
+    //     console.log(e.target.value)
+    //     console.log(isClick)
+    // }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        // console.log(form.profile)
         const formWithImgData = new FormData()
         for (const key in form) {
             formWithImgData.append(key, form[key])
@@ -52,22 +69,27 @@ const RegisterPage = () => {
             telephone: formWithImgData.get("telephone"),
             file: formWithImgData.get("file"),
         };
-        console.log(register)
-
         await axios.post(process.env.REACT_APP_API + '/register', register).then((res) => {
+            console.log(res.data)
+            setUserId(res.data)
+        }).catch((err) => console.log(err))
+        console.log(userId._id)
+
+        await axios.post(process.env.REACT_APP_API + '/addbookpref', { AccId: userId._id, CategoryId: form.bookPref }).then(res => {
             console.log(res.data)
             navigate('/')
         }).catch((err) => console.log(err))
     }
+    // console.log(form)
 
     return (
-        <div className='bg-dark-purple w-full h-full lg:h-screen grid grid-cols-1 gap-10 justify-center items-center pt-10 pb-10 font-noto-sans-thai'>
+        <div className='bg-dark-purple w-full h-full xl:pb-24 grid grid-cols-1 gap-10 justify-center items-center pt-10 pb-12 font-noto-sans-thai'>
             <div>
                 <h1 className='text-white text-5xl md:text-6xl font-bold'>Little Reader</h1>
             </div>
             <form className='w-full flex justify-center' onSubmit={handleSubmit} encType='multipart/form-data'>
                 <div className='flex flex-col gap-10 lg:gap-3 items-center w-1/2 bg-white-bg rounded-2xl'>
-                    <div className='grid grid-cols-3 justify-items-start content-center gap-5 p-10 lg:p-20'>
+                    <div className='w-full grid grid-cols-3 justify-items-start content-center gap-5 p-10 lg:p-20'>
                         <p>Username</p>
                         <input type='text' name='username' className='p-1 w-full col-span-2 border border-gray-400 rounded-lg' placeholder='littleReader123' onChange={e => handleChange(e)} />
                         <p>Password</p>
@@ -85,13 +107,23 @@ const RegisterPage = () => {
                             <option value="fiction">fiction</option>
                             <option value="nonfiction">non-fiction</option>
                         </select> */}
-                        <div className='w-full grid grid-cols-2 col-span-2'>
+                        <div className='w-full grid grid-cols-2 col-span-2 xl:grid-cols-3'>
                             {category ? category.map((item) =>
-                                <button type='button' className='border border-dark-purple m-1 text-sm rounded' key={item._id} value={item._id} onClick={e => handleClick(e)}>{item.name}</button>
-                            ) : 'eiei'}
+                                // <button type='button' className='border border-dark-purple m-1 text-sm rounded focus:bg-light-purple focus:text-white focus:border-none' key={item._id} value={item._id} onClick={e => handleClick(e)}>{item.name}</button>
+                                <div className='w-full flex gap-1' key={item._id}>
+                                    <input
+                                        type='checkbox'
+                                        name='bookPref'
+                                        value={item._id}
+                                        checked={form.bookPref?.includes(item._id)}
+                                        onChange={handleChange}
+                                    />
+                                    <label>{item.name}</label>
+                                </div>
+                            ) : <p>ไม่มีหมวดหมู่หนังสือ</p>}
                         </div>
                         <p>รูป profile</p>
-                        <input type='file' name='file' onChange={e => handleChange(e)} />
+                        <input type='file' name='file' className='col-span-2 w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100' onChange={e => handleChange(e)} />
                     </div>
                     <div className='pb-10'>
                         <button type='submit' className='bg-light-purple opacity-75 p-4 rounded-lg hover:opacity-100 font-semibold'><p className='text-white'>Register Now</p></button>

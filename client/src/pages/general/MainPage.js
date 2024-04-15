@@ -1,20 +1,30 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { currentUser } from '../../functions/auth';
 import bookPhoto from '../../images/book.jpg';
 
 function MainPage() {
     const [book, setBook] = useState([])
-    const [bookReccom, setBookReccom] = useState()
+    const [bookReccom, setBookReccom] = useState([])
+    const [user, setUser] = useState(null)
+    const token = localStorage.getItem('token')
     useEffect(() => {
         loadData()
     }, [])
     const loadData = async () => {
-        await axios.get(process.env.REACT_APP_API + '/listbook')
+        currentUser(token).then(res => setUser(res.data)).catch(err => console.log(err))
+        await axios.get(process.env.REACT_APP_API + '/listnewbook')
             .then(res => {
-                console.log(res.data)
                 setBook(res.data)
             })
             .catch(err => console.log(err))
+        if (user) {
+            await axios.get(process.env.REACT_APP_API + '/listreccomandbook/' + user._id)
+                .then(res => {
+                    setBookReccom(res.data)
+                })
+                .catch(err => console.log(err))
+        }
     }
     return (
         <div className="w-full h-full grow py-8 border flex flex-col justify-center gap-20 bg-white-bg">
@@ -24,8 +34,8 @@ function MainPage() {
             <div className='flex flex-col w-full h-full px-20 items-center justify-center gap-10'>
                 <p className='font-semibold lg:text-xl'>หนังสือแนะนำ</p>
                 <div className='w-full h-full flex flex-cols gap-14 overflow-x-auto overflow-y-hidden'>
-                    {bookReccom ? bookReccom.map((item) =>
-                        <div className='flex flex-col gap-4 items-center'>
+                    {user && bookReccom.length > 0 ? bookReccom.map((item) =>
+                        <div className='flex flex-col gap-4 items-center' key={bookReccom._id}>
                             <div className='relative w-20 h-20 lg:w-40 lg:h-40'>
                                 <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
                                     <p>ว่าง</p>
@@ -38,12 +48,12 @@ function MainPage() {
                             </div>
                         </div>
                     )
-                        : <div><p>ยังไม่มีหนังสือแนะนำ</p></div>}
+                        : <p>ยังไม่มีหนังสือแนะนำ</p>}
                 </div>
                 <p className='font-semibold lg:text-xl'>หนังสือใหม่</p>
                 <div className='w-full h-full flex flex-cols gap-14 overflow-x-auto overflow-y-hidden'>
                     {book ? book.map((item) =>
-                        <div className='flex flex-col gap-4 items-center'>
+                        <div className='flex flex-col gap-4 items-center' key={book._id}>
                             <div className='relative w-20 h-20 lg:w-40 lg:h-40'>
                                 <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
                                     <p>ว่าง</p>

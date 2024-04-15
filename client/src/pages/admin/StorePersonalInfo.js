@@ -10,7 +10,7 @@ const StorePersonalInfo = () => {
     const { id } = useParams()
     const [storeInfo, setStoreInfo] = useState({})
     const [storeEdit, setStoreEdit] = useState({})
-    const { user } = useSelector((state) => ({ ...state }))
+    const { user } = useSelector((state) => (state.user))
     const navigate = useNavigate()
     useEffect(() => {
         loadData()
@@ -76,7 +76,7 @@ const StorePersonalInfo = () => {
         }
         await axios.put(process.env.REACT_APP_API + '/editstoreinfo/' + id, { storeE }, {
             headers: {
-                authtoken: user.user.token
+                authtoken: user.token
             }
         }).then((res) => {
             console.log(res.data)

@@ -22,7 +22,6 @@ exports.addBook = async (req, res) => {
             price,
             file
         })
-        console.log(book)
         await Book(book).save()
         res.send('Add book success!')
     } catch (err) {
@@ -71,16 +70,14 @@ exports.listBookFromStore = async (req, res) => {
 }
 exports.addBookCopy = async (req, res) => {
     try {
-        const { title } = req.body
-        const storeId = req.params.id
-        const bookList = await Book.findOne({ title: title, storeId: storeId }).exec()
-        const bookId = bookList._id
+        const { storeId } = req.body
+        const bookId = req.params.id
+        // const bookList = await Book.findOne({ _id: bookId, storeId: storeId }).exec()
         const lastCopy = await BookCopy.findOne({ BookId: bookId, StoreId: storeId }).sort({ copyNumber: -1 }).exec();
         let nextCopyNumber = 1;
         if (lastCopy) {
             nextCopyNumber = lastCopy.copyNumber + 1;
         }
-        console.log('bookId ', bookId)
         const bookCopy = await new BookCopy({
             BookId: bookId,
             StoreId: storeId,
@@ -88,7 +85,6 @@ exports.addBookCopy = async (req, res) => {
         })
         await bookCopy.save()
         res.send(bookCopy)
-        console.log('book copy ', bookCopy)
     } catch (err) {
         console.log(err)
         res.status(500).send(err)
@@ -112,7 +108,6 @@ exports.addCategory = async (req, res) => {
         })
         await category.save()
         res.send('Add category success!')
-        console.log(category)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')
@@ -153,10 +148,27 @@ exports.addCategoryOfBook = async (req, res) => {
 exports.listCategoryOfBook = async (req, res) => {
     try {
         const { category } = req.query
-        console.log(category)
         const categoryInfo = await Category.findOne({ name: category }).exec()
         const listCategoryOfBook = await CategoryOfBook.find({ categoryId: categoryInfo._id }).populate("bookId").exec()
-        res.send(listCategoryOfBook)
+        var listBookWithStatus = []
+        for (let value of listCategoryOfBook) {
+            const bookCopy = await BookCopy.find({ BookId: value.bookId._id }).exec()
+            let status = []
+            bookCopy.map((bookItem) => {
+                status.push(bookItem.status)
+            })
+            const isAvaliable = (cur) => cur === true
+            const result = status.every(isAvaliable)
+            let bookWithStatus = {
+                _id: value.bookId._id,
+                title: value.bookId.title,
+                price: value.bookId.price,
+                file: value.bookId.file,
+                status: result
+            }
+            listBookWithStatus.push(bookWithStatus)
+        }
+        res.send(listBookWithStatus)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')
@@ -164,13 +176,92 @@ exports.listCategoryOfBook = async (req, res) => {
 }
 exports.addBookPref = async (req, res) => {
     try {
-        const accId = req.params.id
-        const { CategoryId } = req.body
+        const { CategoryId, AccId } = req.body
         const bookPref = await new BookPreference({
-            AccId: accId,
+            AccId: AccId,
             CategoryId: CategoryId
         }).save()
         res.send(bookPref)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.bookStatus = async (req, res) => {
+    try {
+        const statusBook = new Array()
+        const book = await Book.find().exec()
+        for (let value of book) {
+            const bookCopy = await BookCopy.find({ BookId: value._id }).exec()
+            let status = []
+            bookCopy.map((bookItem) => {
+                status.push(bookItem.status)
+            })
+            const isAvaliable = (cur) => cur === true
+            const result = status.every(isAvaliable)
+            let bookWithStatus = {
+                _id: value._id,
+                title: value.title,
+                price: value.price,
+                file: value.file,
+                status: result
+            }
+            statusBook.push(bookWithStatus)
+        }
+        res.send(statusBook)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.listNewBook = async (req, res) => {
+    try {
+        const bookList = await Book.find({}).sort({ createdAt: -1 }).limit(5).exec()
+        res.send(bookList)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.listReccomandBook = async (req, res) => {
+    try {
+        const id = req.params.id
+        const bookPref = await BookPreference.findOne({ AccId: id }).exec()
+        const listId = []
+        for (let value of bookPref.CategoryId) {
+            let bookList
+            bookList = await CategoryOfBook.find({ categoryId: value }).exec()
+            for (let book of bookList) {
+                listId.push(book)
+            }
+        }
+        function filterDuplicates(array) {
+            var uniqueArray = array.filter((item, index) => {
+                return (index === array.findIndex((obj) => {
+                    return obj.bookId.equals(item.bookId);
+                }));
+            });
+            return uniqueArray;
+        }
+        var uniqueArray = filterDuplicates(listId);
+        var listBook = []
+        for (let value of uniqueArray) {
+            let book
+            book = await Book.findOne({ _id: value.bookId }).exec()
+            listBook.push(book)
+        }
+        function generateRandomArray(length, max) {
+            let result = new Set();
+            for (let i = 0; i < length; i++) {
+                let random = listBook[Math.floor(Math.random() * max)]
+                result.add(random);
+            }
+            return Array.from(result);
+        }
+
+        const listBookRand = generateRandomArray(5, listBook.length);
+        console.log(listBookRand);
+        res.send(listBookRand)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')

@@ -7,10 +7,10 @@ const bookPrefSchema = mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: User
     },
-    CategoryId: {
+    CategoryId: [{
         type: mongoose.Schema.ObjectId,
         ref: Category
-    }
+    }]
 }, { timestamps: true })
 
 module.exports = mongoose.model('bookpreference', bookPrefSchema)

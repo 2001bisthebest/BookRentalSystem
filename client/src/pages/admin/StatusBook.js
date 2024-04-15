@@ -36,6 +36,7 @@ const StatusBook = () => {
                     <hr className='col-span-full border-light-purple' />
                 </div>
             </div>
+
         </div>
     )
 }

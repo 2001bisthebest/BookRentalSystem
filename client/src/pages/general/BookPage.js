@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { currentUser } from '../../functions/auth'
 
 const BookPage = () => {
     const [book, setBook] = useState({})
@@ -8,8 +9,14 @@ const BookPage = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [review, setReview] = useState([])
+    const [form, setForm] = useState({})
+    const token = localStorage.getItem('token')
+    const [user, setUser] = useState(null)
     useEffect(() => {
         loadData()
+        if (token) {
+            currentUser(token).then(res => setUser(res.data)).catch(err => console.log(err))
+        }
     }, [id])
     const loadData = async () => {
         await axios.get(process.env.REACT_APP_API + '/showbookinfo/' + id)
@@ -26,12 +33,23 @@ const BookPage = () => {
             .then(res => setReview(res.data))
             .catch(err => console.log(err))
     }
-    console.log(review)
     const checkStatus = () => {
         return bookCopy.every(item => item.status === true)
     }
     const reserving = () => {
         navigate('/reservation/' + id)
+    }
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm({
+            ...form,
+            [name]: value
+        });
+        console.log(form)
+    }
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
     }
     return (
         <div className="w-full h-full grow py-20 flex flex-col justify-start gap-10 bg-white-bg">
@@ -41,18 +59,18 @@ const BookPage = () => {
             <div className='flex flex-col lg:flex-row items-center gap-20 px-20'>
                 <img src={process.env.REACT_APP_IMG + '/' + book.file} className='w-60 h-60 rounded-lg' />
                 <div className='flex flex-col justify-center items-start gap-2'>
-                    <p>รายละเอียดหนังสือ : </p>
-                    <div className='grid grid-cols-2 justify-items-start gap-1 px-2'>
+                    <p>รายละเอียดหนังสือ</p>
+                    <div className='grid grid-cols-4 justify-items-start gap-1 px-2'>
                         <p>ชื่อผู้แต่ง :</p>
-                        <p>{book.title}</p>
+                        <p className='col-span-3'>{book.title}</p>
                         <p>ชื่อผู้แปล :</p>
-                        <p>{book.translator}</p>
+                        <p className='col-span-3'>{book.translator}</p>
                         <p>สำนักพิมพ์ :</p>
-                        <p>{book.publisher}</p>
+                        <p className='col-span-3'>{book.publisher}</p>
                         <p>ปีที่พิมพ์ :</p>
-                        <p>{book.year}</p>
+                        <p className='col-span-3'>{book.year}</p>
                         <p>ราคาเช่า :</p>
-                        <p>{book.price}</p>
+                        <p className='col-span-3'>{book.price}</p>
                         <p>สถานะ</p>
                         {checkStatus() ?
                             <div className='w-14 h-6 rounded bg-yellow-btn text-white drop-shadow-md px-1'>
@@ -79,10 +97,10 @@ const BookPage = () => {
                 <button className='bg-light-purple text-white rounded px-4 py-2 drop-shadow-md'>ดูร้าน</button>
             </div>
             <div className='place-self-center flex flex-col bg-light-purple/20 w-5/6 px-10 py-5 rounded-md gap-5'>
-                <form className='w-full flex flex-col gap-5'>
+                <form className='w-full flex flex-col gap-5' onSubmit={handleSubmit}>
                     <h1 className='place-self-start font-bold text-xl'>ความคิดเห็น</h1>
-                    <input className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' placeholder='รีวิวที่นี่...' />
-                    <button className='self-end bg-light-purple text-white rounded px-4 py-1 drop-shadow-md'>แสดงความคิดเห็น</button>
+                    {user ? <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='review' placeholder='รีวิวที่นี่...' onChange={e => handleChange(e)} /> : <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='review' placeholder='คุณต้องเข้าสู่ระบบ' onChange={e => handleChange(e)} disabled />}
+                    <button className='self-end bg-light-purple text-white rounded px-4 py-1 drop-shadow-md' type='submit'>แสดงความคิดเห็น</button>
                 </form>
                 {review && review.length > 0 ? review.map((item) =>
                     <div className='flex flex-col items-start gap-5' key={item._id}>
@@ -92,7 +110,6 @@ const BookPage = () => {
                         </div>
                     </div>
                 ) : 'ยังไม่มีความคิดเห็นเกี่ยวกับหนังสือเล่มนี้'}
-
             </div>
         </div>
     )

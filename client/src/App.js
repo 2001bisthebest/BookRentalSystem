@@ -26,7 +26,7 @@ import { login as loginUser } from './store/userSlice';
 
 function App() {
   const dispatch = useDispatch()
-  var { id, category } = useParams()
+  var { id, category, status } = useParams()
   const token = localStorage.getItem('token')
   console.log('token', token)
   if (token) {
@@ -106,9 +106,9 @@ function App() {
               <CartPage />
             </UserRoute>
           } />
-          <Route path='/statusbook' element={
+          <Route path="/status/:status" element={
             <UserRoute>
-              <StatusBook />
+              <StatusBook initialStatus="reserved" />
             </UserRoute>
           } />
           <Route path='/statusbookadmin/:id' element={
@@ -116,7 +116,7 @@ function App() {
               <StatusBookAdmin />
             </AdminRoute>
           } />
-          <Route path='/queuebookadmin' element={
+          <Route path='/queuebookadmin/:id' element={
             <AdminRoute>
               <QueueBook />
             </AdminRoute>
