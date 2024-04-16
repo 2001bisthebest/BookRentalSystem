@@ -17,6 +17,10 @@ const orderSchema = mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: store
     },
+    QueueId: {
+        type: mongoose.Schema.ObjectId,
+        ref: queue
+    },
     statusOrder: {
         type: Boolean,
         default: false

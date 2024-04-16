@@ -40,7 +40,7 @@ function MainPage() {
                                 <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
                                     <p>ว่าง</p>
                                 </div>
-                                <a href={`/book/${item._id}`} className='w-full h-full'>{item.file ? <img src={process.env.REACT_APP_IMG + "/" + item.file} className='w-full h-full rounded-lg drop-shadow-md'></img> : ""}</a>
+                                <a href={`/book/${item._id}`} className='w-full h-full flex justify-center'>{item.file ? <img src={process.env.REACT_APP_IMG + "/" + item.file} className='h-full rounded-lg drop-shadow-md'></img> : ""}</a>
                             </div>
                             <div className='flex flex-col gap-1 text-sm lg:text-base'>
                                 <p className='font-semibold'>{item.title}</p>
@@ -58,7 +58,7 @@ function MainPage() {
                                 <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
                                     <p>ว่าง</p>
                                 </div>
-                                <a href={`/book/${item._id}`} className='w-full h-full'>{item.file ? <img src={process.env.REACT_APP_IMG + "/" + item.file} className='w-full h-full rounded-lg drop-shadow-md'></img> : ""}</a>
+                                <a href={`/book/${item._id}`} className='w-full h-full flex justify-center'>{item.file ? <img src={process.env.REACT_APP_IMG + "/" + item.file} className='h-full rounded-lg drop-shadow-md'></img> : ""}</a>
                             </div>
                             <div className='flex flex-col gap-1 text-sm lg:text-base'>
                                 <p className='font-semibold'>{item.title}</p>

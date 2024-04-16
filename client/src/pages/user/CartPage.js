@@ -1,7 +1,28 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 const CartPage = () => {
-
+    const [book, setBook] = useState({})
+    const orderId = useParams()
+    const token = localStorage.getItem('token')
+    const [order, setOrder] = useState({})
+    // console.log(orderId)
+    useEffect(() => {
+        loadData()
+    }, [orderId.id])
+    const loadData = async () => {
+        await axios.get(process.env.REACT_APP_API + '/showorder/' + orderId.id, {
+            headers: {
+                authtoken: token
+            }
+        })
+            .then(res => {
+                console.log(res.data)
+                setOrder(res.data)
+            })
+            .catch(err => console.log(err))
+    }
     return (
         <div className="w-full h-full grow py-8 flex flex-col justify-start items-center gap-10 bg-white-bg">
             <div className='self-center'>
@@ -11,11 +32,10 @@ const CartPage = () => {
             <div className='flex flex-col gap-5 lg:gap-10 w-full px-20'>
                 <div className='flex w-full justify-between'>
                     <div className='flex gap-5'>
-                        <input type='checkbox' />
                         <div className='bg-light-gray w-24 h-24 lg:w-36 lg:h-36 rounded-lg'>
                         </div>
                         <div className='flex flex-col gap-1 lg:gap-2 justify-start items-start'>
-                            <p>Title 1</p>
+                            <p>{order.title}</p>
                             <p>Store name 1</p>
                             <p>จำนวนวันที่เช่า</p>
                         </div>

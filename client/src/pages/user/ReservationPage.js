@@ -52,7 +52,7 @@ const ReservationPage = () => {
         })
             .then(res => {
                 console.log(res)
-                navigate('/cart/' + user.id)
+                navigate('/status/reserved')
             })
             .catch(err => {
                 console.log(err)

@@ -145,7 +145,7 @@ exports.queueFullList = async (req, res) => {
 exports.queueListStore = async (req, res) => {
     try {
         const storeId = req.params.id
-        const queue = await QueueReserve.find({ StoreId: storeId }).exec()
+        const queue = await QueueReserve.find({ StoreId: storeId, createOrderStatus: false }).exec()
         function filterDuplicates(array) {
             var uniqueArray = array.filter((item, index) => {
                 // Check if the index of the current item is equal to the first occurrence of the item

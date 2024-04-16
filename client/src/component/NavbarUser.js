@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import BasketSVG from '../SVG/BasketSVG.js'
+// import BasketSVG from '../SVG/BasketSVG.js'
 import SearchSVG from '../SVG/SearchSVG.js'
 import UserSVG from '../SVG/UserSVG.js'
 import { currentAdmin, currentUser } from '../functions/auth.js'
@@ -56,7 +56,7 @@ const NavbarUser = () => {
                     <input className='h-10 bg-light-purple rounded-full' />
                     <SearchSVG />
                 </div>
-                <a href={'/cart/' + userInfo._id}><BasketSVG /></a>
+                <a href={'/status/reserved'} className='text-white'>สถานะหนังสือ</a>
                 <button onClick={openMenu}>
                     {userInfo > 0 ?
                         <div className='w-10 h-10'>
