@@ -12,27 +12,34 @@ const BookPage = () => {
     const [form, setForm] = useState({})
     const token = localStorage.getItem('token')
     const [user, setUser] = useState(null)
+    const [checkPermissionToReview, setCheckPermissionToReview] = useState(false)
     useEffect(() => {
-        loadData()
         if (token) {
             currentUser(token).then(res => setUser(res.data)).catch(err => console.log(err))
         }
+        loadData()
     }, [id])
     const loadData = async () => {
-        await axios.get(process.env.REACT_APP_API + '/showbookinfo/' + id)
-            .then(res => {
-                setBook(res.data)
-            })
-            .catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listbookcopy/' + id)
-            .then(res => {
-                setBookCopy(res.data)
-            })
-            .catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listreview/' + id)
-            .then(res => setReview(res.data))
-            .catch(err => console.log(err))
+        try {
+            let bookResponse = await axios.get(process.env.REACT_APP_API + '/showbookinfo/' + id)
+            setBook(bookResponse.data)
+            let bookCopyResponse = await axios.get(process.env.REACT_APP_API + '/listbookcopy/' + id)
+            setBookCopy(bookCopyResponse.data)
+            let reviewResponse = await axios.get(process.env.REACT_APP_API + '/listreview/' + id)
+            setReview(reviewResponse.data)
+            if (user != null) {
+                let permissionResponse = await axios.post(process.env.REACT_APP_API + '/checkpermissiontoreview/' + id, { accId: user._id }, {
+                    headers: {
+                        authtoken: token
+                    }
+                })
+                setCheckPermissionToReview(permissionResponse.data)
+            }
+        } catch (err) {
+            console.log(err)
+        }
     }
+    console.log(checkPermissionToReview)
     const checkStatus = () => {
         return bookCopy.every(item => item.status === true)
     }
@@ -57,7 +64,9 @@ const BookPage = () => {
                 <h1 className='font-bold text-3xl'>{book.title}</h1>
             </div>
             <div className='flex flex-col lg:flex-row items-center gap-20 px-20'>
-                <img src={process.env.REACT_APP_IMG + '/' + book.file} className='w-60 h-60 rounded-lg' />
+                <div className='w-60 h-60 rounded-lg flex justify-center'>
+                    <img src={process.env.REACT_APP_IMG + '/' + book.file} className='h-full rounded-lg drop-shadow-md' />
+                </div>
                 <div className='flex flex-col justify-center items-start gap-2'>
                     <p>รายละเอียดหนังสือ</p>
                     <div className='grid grid-cols-4 justify-items-start gap-1 px-2'>
@@ -91,7 +100,7 @@ const BookPage = () => {
             </div>
             <div className='flex justify-between items-center px-40'>
                 <div className='flex gap-4 items-center'>
-                    <div className='bg-light-gray rounded-full w-16 h-16'>pic</div>
+                    <div className='bg-light-gray rounded-full w-16 h-16'></div>
                     <p>Store name</p>
                 </div>
                 <button className='bg-light-purple text-white rounded px-4 py-2 drop-shadow-md'>ดูร้าน</button>

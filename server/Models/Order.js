@@ -28,11 +28,16 @@ const orderSchema = mongoose.Schema({
     price: Number,
     shippingFromStoreDate: Date,
     shippingFromCustomerDate: Date,
-    trackNumberFromStore: Number,
+    trackNumberFromStore: String,
+    trackNumberFromCustomer: String,
     shippingNameFromStore: String,
     shippingNameFromCustomer: String,
     file: String,
     statusPaid: {
+        type: Boolean,
+        default: false
+    },
+    statusReceiveBook: {
         type: Boolean,
         default: false
     }

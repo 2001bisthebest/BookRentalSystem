@@ -1,5 +1,5 @@
 const express = require('express')
-const { addBook, listBook, listBookFromStore, addBookCopy, addCategory, listCategory, showBookInfo, listBookCopy, addCategoryOfBook, listCategoryOfBook, showBookInfoPoppulateStore, addBookPref, bookStatus, listNewBook, listReccomandBook } = require('../Controllers/book')
+const { addBook, listBook, listBookFromStore, addBookCopy, addCategory, listCategory, showBookInfo, listBookCopy, addCategoryOfBook, listCategoryOfBook, showBookInfoPoppulateStore, addBookPref, bookStatus, listNewBook, listReccomandBook, searchBook, checkPermissionToReview } = require('../Controllers/book')
 const { auth } = require('../Middleware/auth')
 const { upload } = require('../Middleware/upload')
 const router = express.Router()
@@ -19,4 +19,6 @@ router.post('/addbookpref', addBookPref)
 router.get('/statusallbook', bookStatus)
 router.get('/listnewbook', listNewBook)
 router.get('/listreccomandbook/:id', listReccomandBook)
+router.get('/searchbook', searchBook)
+router.post('/checkpermissiontoreview/:id', auth, checkPermissionToReview)
 module.exports = router

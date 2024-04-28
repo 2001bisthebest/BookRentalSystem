@@ -11,6 +11,11 @@ function MainPage() {
     useEffect(() => {
         loadData()
     }, [])
+    useEffect(() => {
+        if (user) {
+            loadDataBookRec()
+        }
+    }, [user])
     const loadData = async () => {
         currentUser(token).then(res => setUser(res.data)).catch(err => console.log(err))
         await axios.get(process.env.REACT_APP_API + '/listnewbook')
@@ -18,13 +23,14 @@ function MainPage() {
                 setBook(res.data)
             })
             .catch(err => console.log(err))
-        if (user) {
-            await axios.get(process.env.REACT_APP_API + '/listreccomandbook/' + user._id)
-                .then(res => {
-                    setBookReccom(res.data)
-                })
-                .catch(err => console.log(err))
-        }
+    }
+    const loadDataBookRec = async () => {
+        const userId = await user._id
+        await axios.get(process.env.REACT_APP_API + '/listreccomandbook/' + userId)
+            .then(res => {
+                setBookReccom(res.data)
+            })
+            .catch(err => console.log(err))
     }
     return (
         <div className="w-full h-full grow py-8 border flex flex-col justify-center gap-20 bg-white-bg">
@@ -47,8 +53,7 @@ function MainPage() {
                                 <p>{item.price} บาท</p>
                             </div>
                         </div>
-                    )
-                        : <p>ยังไม่มีหนังสือแนะนำ</p>}
+                    ) : <p>ยังไม่มีหนังสือแนะนำ</p>}
                 </div>
                 <p className='font-semibold lg:text-xl'>หนังสือใหม่</p>
                 <div className='w-full h-full flex flex-cols gap-14 overflow-x-auto overflow-y-hidden'>
@@ -65,8 +70,7 @@ function MainPage() {
                                 <p>{item.price} บาท</p>
                             </div>
                         </div>
-                    )
-                        : <div><p>ยังไม่มีหนังสือใหม่</p></div>}
+                    ) : <div><p>ยังไม่มีหนังสือใหม่</p></div>}
                 </div>
             </div>
         </div>

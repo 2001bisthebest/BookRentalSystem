@@ -3,6 +3,9 @@ import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom';
 import './App.css';
 import { currentAdmin, currentUser } from './functions/auth';
 import AllQueueBook from './pages/admin/AllQueueBook';
+import OrderCheck from './pages/admin/OrderCheck';
+import OrderReturn from './pages/admin/OrderReturn';
+import OrderShipping from './pages/admin/OrderShipping';
 import QueueBook from './pages/admin/QueueBook';
 import StatusBookAdmin from './pages/admin/StatusBook';
 import StorePersonalInfo from './pages/admin/StorePersonalInfo';
@@ -124,6 +127,21 @@ function App() {
           <Route path='/allqueuebookadmin' element={
             <AdminRoute>
               <AllQueueBook />
+            </AdminRoute>
+          } />
+          <Route path='/orderforcheck/:id' element={
+            <AdminRoute>
+              <OrderCheck />
+            </AdminRoute>
+          } />
+          <Route path='/orderforshipping/:id' element={
+            <AdminRoute>
+              <OrderShipping />
+            </AdminRoute>
+          } />
+          <Route path='/orderforreturn/:id' element={
+            <AdminRoute>
+              <OrderReturn />
             </AdminRoute>
           } />
         </Routes>

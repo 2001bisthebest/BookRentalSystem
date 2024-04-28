@@ -6,8 +6,6 @@ const RegisterPage = () => {
     const [form, setForm] = useState({ bookPref: [] })
     const navigate = useNavigate()
     const [category, setCategory] = useState([])
-    const [userId, setUserId] = useState({})
-    // const [isClick, setIsClick] = useState(false)
     useEffect(() => {
         loadData()
     }, [])
@@ -45,12 +43,6 @@ const RegisterPage = () => {
             });
         }
     }
-    // const handleClick = async (e) => {
-    //     e.preventDefault()
-    //     setIsClick(!isClick)
-    //     console.log(e.target.value)
-    //     console.log(isClick)
-    // }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -69,18 +61,24 @@ const RegisterPage = () => {
             telephone: formWithImgData.get("telephone"),
             file: formWithImgData.get("file"),
         };
-        await axios.post(process.env.REACT_APP_API + '/register', register).then((res) => {
-            console.log(res.data)
-            setUserId(res.data)
-        }).catch((err) => console.log(err))
-        console.log(userId._id)
+        try {
+            const response = await axios.post(process.env.REACT_APP_API + '/register', register);
+            console.log(response.data);
+            const userId = response.data;
 
-        await axios.post(process.env.REACT_APP_API + '/addbookpref', { AccId: userId._id, CategoryId: form.bookPref }).then(res => {
-            console.log(res.data)
-            navigate('/')
-        }).catch((err) => console.log(err))
+            if (userId && userId._id) {
+                const bookPrefResponse = await axios.post(process.env.REACT_APP_API + '/addbookpref', {
+                    AccId: userId._id,
+                    CategoryId: form.bookPref
+                });
+                navigate('/');
+            } else {
+                console.error("Invalid user ID returned from registration.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
     }
-    // console.log(form)
 
     return (
         <div className='bg-dark-purple w-full h-full xl:pb-24 grid grid-cols-1 gap-10 justify-center items-center pt-10 pb-12 font-noto-sans-thai'>
@@ -103,10 +101,6 @@ const RegisterPage = () => {
                         <p>เบอร์โทร</p>
                         <input type='number' name='telephone' className='p-1 w-full col-span-2 border border-gray-400 rounded-lg' placeholder='0xx-xxx-xxxx' onChange={e => handleChange(e)} />
                         <p>หนังสือที่สนใจ</p>
-                        {/* <select name='typeofbook' onChange={e => handleChange(e)}>
-                            <option value="fiction">fiction</option>
-                            <option value="nonfiction">non-fiction</option>
-                        </select> */}
                         <div className='w-full grid grid-cols-2 col-span-2 xl:grid-cols-3'>
                             {category ? category.map((item) =>
                                 // <button type='button' className='border border-dark-purple m-1 text-sm rounded focus:bg-light-purple focus:text-white focus:border-none' key={item._id} value={item._id} onClick={e => handleClick(e)}>{item.name}</button>

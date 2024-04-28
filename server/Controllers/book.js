@@ -3,6 +3,7 @@ const BookCopy = require("../Models/BookCopy")
 const BookPreference = require("../Models/BookPreference")
 const Category = require("../Models/Category")
 const CategoryOfBook = require("../Models/CategoryOfBook")
+const Order = require("../Models/Order")
 
 exports.addBook = async (req, res) => {
     try {
@@ -258,10 +259,45 @@ exports.listReccomandBook = async (req, res) => {
             }
             return Array.from(result);
         }
-
         const listBookRand = generateRandomArray(5, listBook.length);
         console.log(listBookRand);
         res.send(listBookRand)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.searchBook = async (req, res) => {
+    try {
+        const { name } = req.query
+        const regex = new RegExp(name, 'i')
+        const books = await Book.find({
+            $or: [
+                { title: { $regex: regex } },
+                { author: { $regex: regex } }
+            ]
+        }).exec();
+        console.log(books)
+        res.send(books)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')//
+    }
+}
+exports.checkPermissionToReview = async (req, res) => {
+    try {
+        const bookId = req.params.id
+        const { accId } = req.body
+        const bookCopy = await BookCopy.find({ BookId: bookId }).exec()
+        var rentAlready = false
+        for (let item of bookCopy) {
+            let order = await Order.findOne({ AccId: accId, CopyId: item._id, statusOrder: true }).exec()
+            if (order != null) {
+                rentAlready = true
+                break
+            }
+        }
+        res.send(rentAlready)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')

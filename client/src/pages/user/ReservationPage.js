@@ -66,20 +66,22 @@ const ReservationPage = () => {
                 <h1 className='font-bold text-3xl'>{book.title}</h1>
             </div>
             <div className='flex flex-col lg:flex-row justify-start items-center gap-20 px-24'>
-                <img src={process.env.REACT_APP_IMG + '/' + book.file} className='w-60 h-60 rounded-lg' />
+                <div className='w-60 h-60 flex justify-center'>
+                    <img src={process.env.REACT_APP_IMG + '/' + book.file} className='h-full rounded-lg drop-shadow-md' />
+                </div>
                 <div className='flex flex-col justify-center items-start gap-2'>
                     <p>รายละเอียดหนังสือ : </p>
-                    <div className='grid grid-cols-2 justify-items-start gap-1 px-2'>
+                    <div className='grid grid-cols-4 justify-items-start gap-1 px-2'>
                         <p>ชื่อผู้แต่ง :</p>
-                        <p>{book.title}</p>
+                        <p className='col-span-3'>{book.title}</p>
                         <p>ชื่อผู้แปล :</p>
-                        <p>{book.translator}</p>
+                        <p className='col-span-3'>{book.translator}</p>
                         <p>สำนักพิมพ์ :</p>
-                        <p>{book.publisher}</p>
+                        <p className='col-span-3'>{book.publisher}</p>
                         <p>ปีที่พิมพ์ :</p>
-                        <p>{book.year}</p>
+                        <p className='col-span-3'>{book.year}</p>
                         <p>ราคาเช่า :</p>
-                        <p>{book.price}</p>
+                        <p className='col-span-3'>{book.price}</p>
                         <p>สถานะ</p>
                         {checkStatus() ?
                             <div className='w-14 h-6 rounded bg-yellow-btn text-white drop-shadow-md px-1'>
