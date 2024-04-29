@@ -217,8 +217,26 @@ exports.bookStatus = async (req, res) => {
 }
 exports.listNewBook = async (req, res) => {
     try {
+        const statusBook = new Array()
         const bookList = await Book.find({}).sort({ createdAt: -1 }).limit(5).exec()
-        res.send(bookList)
+        for (let value of bookList) {
+            const bookCopy = await BookCopy.find({ BookId: value._id }).exec()
+            let status = []
+            bookCopy.map((bookItem) => {
+                status.push(bookItem.status)
+            })
+            const isAvaliable = (cur) => cur === true
+            const result = status.every(isAvaliable)
+            let bookWithStatus = {
+                _id: value._id,
+                title: value.title,
+                price: value.price,
+                file: value.file,
+                status: result
+            }
+            statusBook.push(bookWithStatus)
+        }
+        res.send(statusBook)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')
@@ -249,7 +267,21 @@ exports.listReccomandBook = async (req, res) => {
         for (let value of uniqueArray) {
             let book
             book = await Book.findOne({ _id: value.bookId }).exec()
-            listBook.push(book)
+            const bookCopy = await BookCopy.find({ BookId: book._id }).exec()
+            let status = []
+            bookCopy.map((bookItem) => {
+                status.push(bookItem.status)
+            })
+            const isAvaliable = (cur) => cur === true
+            const result = status.every(isAvaliable)
+            let bookWithStatus = {
+                _id: book._id,
+                title: book.title,
+                price: book.price,
+                file: book.file,
+                status: result
+            }
+            listBook.push(bookWithStatus)
         }
         function generateRandomArray(length, max) {
             let result = new Set();

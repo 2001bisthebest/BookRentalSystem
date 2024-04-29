@@ -26,12 +26,12 @@ const Sidebar = () => {
                             </Link>
                         </li>) : ''}
                 </ul>
-                <p>สมาชิก</p>
+                {/* <p>สมาชิก</p>
                 <ul className='flex flex-col items-start px-2 list-disc list-inside'>
                     <li>ข้อมูลส่วนตัว</li>
                     <li>หนังสือที่จองคิวไว้</li>
                     <li>ร้านเช่าของฉัน</li>
-                </ul>
+                </ul> */}
                 <p>กฏการใช้งาน</p>
                 <p>ติดต่อเรา</p>
             </div>

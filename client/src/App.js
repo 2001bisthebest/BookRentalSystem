@@ -1,3 +1,5 @@
+import { jwtDecode } from 'jwt-decode';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom';
 import './App.css';
@@ -25,33 +27,55 @@ import AdminRoute from './route/AdminRoute';
 import GeneralRoute from './route/GeneralRoute';
 import UserRoute from './route/UserRoute';
 import { login as loginAdmin } from './store/adminSlice';
+import { logout as logoutAdmin } from './store/adminSlice.js';
 import { login as loginUser } from './store/userSlice';
+import { logout as logoutUser } from './store/userSlice.js';
 
 function App() {
   const dispatch = useDispatch()
   var { id, category, status } = useParams()
-  const token = localStorage.getItem('token')
-  console.log('token', token)
-  if (token) {
-    currentUser(token).then(res => {
-      dispatch(loginUser({
-        username: res.data.username,
-        id: res.data._id,
-        haveStore: res.data.haveStore,
-        token: token
-      }))
-      if (res.data.haveStore === true) {
-        currentAdmin(token, res.data.username).then(res => {
-          // console.log('admin ', res)
-          dispatch(loginAdmin({
-            id: res.data._id,
-            name: res.data.name
-          }))
-        })
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const handleLogout = () => {
+      localStorage.removeItem('token');
+      dispatch(logoutUser())
+      dispatch(logoutAdmin())
+      alert('token expire. Please Login again!')
+    };
+    const checkTokenExpiration = () => {
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp < currentTime) {
+          handleLogout();
+        } else {
+          currentUser(token)
+            .then((res) => {
+              dispatch(
+                loginUser({
+                  username: res.data.username,
+                  id: res.data._id,
+                  haveStore: res.data.haveStore,
+                  token: token,
+                })
+              );
+              if (res.data.haveStore === true) {
+                currentAdmin(token, res.data.username).then((res) => {
+                  dispatch(
+                    loginAdmin({
+                      id: res.data._id,
+                      name: res.data.name,
+                    })
+                  );
+                });
+              }
+            })
+            .catch((err) => console.log(err));
+        }
       }
-      // localStorage.clear()
-    }).catch(err => console.log(err))
-  }
+    };
+    checkTokenExpiration();
+  }, []);
 
   return (
     <BrowserRouter>

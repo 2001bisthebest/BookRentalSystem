@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const catagory = require('./Category')
 const userSchema = mongoose.Schema({
     username: String,
     password: {

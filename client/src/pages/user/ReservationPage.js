@@ -16,7 +16,15 @@ const ReservationPage = () => {
     const navigate = useNavigate()
     const { user } = useSelector((state) => (state.user))
     const handleValueChange = (newValue) => {
-        setValue(newValue);
+        console.log(newValue)
+        let startDate = new Date(newValue.startDate)
+        let endDate = new Date(newValue.endDate)
+        let resultDate = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+        if (resultDate >= 7) {
+            setValue(newValue);
+        } else {
+            alert('กรุณาจอง 7 วันหรือมากกว่าเป็นต้นไป')
+        }
     }
     useEffect(() => {
         loadData()
@@ -40,7 +48,6 @@ const ReservationPage = () => {
                 setQueueFullList(res.data)
             })
     }
-    console.log(queueFullList)
     const checkStatus = () => {
         return bookCopy.every(item => item.status === true)
     }

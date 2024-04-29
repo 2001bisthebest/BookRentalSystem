@@ -1,3 +1,4 @@
+const Book = require('../Models/Book')
 const Store = require('../Models/Store')
 const User = require('../Models/User')
 exports.list = async (req, res) => {
@@ -61,6 +62,17 @@ exports.editStoreInfo = async (req, res) => {
             numberOfDayForShipping: numberOfDayForShipping,
             file: file
         }, { new: true }).exec()
+        res.send(storeInfo)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.storeInfoFromBook = async (req, res) => {
+    try {
+        const bookId = req.params.id
+        const book = await Book.findOne({ _id: bookId }).exec()
+        const storeInfo = await Store.findOne({ _id: book.storeId }).exec()
         res.send(storeInfo)
     } catch (err) {
         console.log(err)

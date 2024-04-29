@@ -60,9 +60,14 @@ function MainPage() {
                     {book ? book.map((item) =>
                         <div className='flex flex-col gap-4 items-center' key={book._id}>
                             <div className='relative w-20 h-20 lg:w-40 lg:h-40'>
-                                <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
-                                    <p>ว่าง</p>
-                                </div>
+                                {item.status ?
+                                    <div className='absolute top-2 right-2 w-12 h-6 rounded bg-yellow-btn text-white drop-shadow-md z-40'>
+                                        <p>รอคิว</p>
+                                    </div> :
+                                    <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
+                                        <p>ว่าง</p>
+                                    </div>
+                                }
                                 <a href={`/book/${item._id}`} className='w-full h-full flex justify-center'>{item.file ? <img src={process.env.REACT_APP_IMG + "/" + item.file} className='h-full rounded-lg drop-shadow-md'></img> : ""}</a>
                             </div>
                             <div className='flex flex-col gap-1 text-sm lg:text-base'>

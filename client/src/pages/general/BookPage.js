@@ -13,6 +13,7 @@ const BookPage = () => {
     const token = localStorage.getItem('token')
     const [user, setUser] = useState(null)
     const [checkPermissionToReview, setCheckPermissionToReview] = useState(false)
+    const [store, setStore] = useState({})
     useEffect(() => {
         if (token) {
             currentUser(token).then(res => setUser(res.data)).catch(err => console.log(err))
@@ -35,11 +36,13 @@ const BookPage = () => {
                 })
                 setCheckPermissionToReview(permissionResponse.data)
             }
+            let storeResponse = await axios.get(process.env.REACT_APP_API + '/storeinfofrombook/' + id)
+            setStore(storeResponse.data)
+            console.log(storeResponse.data)
         } catch (err) {
             console.log(err)
         }
     }
-    console.log(checkPermissionToReview)
     const checkStatus = () => {
         return bookCopy.every(item => item.status === true)
     }
@@ -54,9 +57,21 @@ const BookPage = () => {
         });
         console.log(form)
     }
+    console.log(checkPermissionToReview)
     const handleSubmit = async (e) => {
-        e.preventDefault()
-
+        const formResult = {
+            AccId: user._id,
+            comment: form.comment
+        }
+        try {
+            let reviewResponse = await axios.post(process.env.REACT_APP_API + '/addreview/' + id, formResult, {
+                headers: {
+                    authtoken: token
+                }
+            })
+        } catch (err) {
+            console.log(err)
+        }
     }
     return (
         <div className="w-full h-full grow py-20 flex flex-col justify-start gap-10 bg-white-bg">
@@ -100,15 +115,15 @@ const BookPage = () => {
             </div>
             <div className='flex justify-between items-center px-40'>
                 <div className='flex gap-4 items-center'>
-                    <div className='bg-light-gray rounded-full w-16 h-16'></div>
-                    <p>Store name</p>
+                    <div className='rounded-full w-16 h-16'><img className='w-full h-full rounded-full' src={process.env.REACT_APP_IMG + '/' + store.file} /></div>
+                    <p>{store.name}</p>
                 </div>
                 <button className='bg-light-purple text-white rounded px-4 py-2 drop-shadow-md'>ดูร้าน</button>
             </div>
             <div className='place-self-center flex flex-col bg-light-purple/20 w-5/6 px-10 py-5 rounded-md gap-5'>
                 <form className='w-full flex flex-col gap-5' onSubmit={handleSubmit}>
                     <h1 className='place-self-start font-bold text-xl'>ความคิดเห็น</h1>
-                    {user ? <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='review' placeholder='รีวิวที่นี่...' onChange={e => handleChange(e)} /> : <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='review' placeholder='คุณต้องเข้าสู่ระบบ' onChange={e => handleChange(e)} disabled />}
+                    {user != null && checkPermissionToReview != false ? <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='comment' placeholder='รีวิวที่นี่...' onChange={e => handleChange(e)} /> : <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='review' placeholder='คุณต้องเข้าสู่ระบบ' onChange={e => handleChange(e)} disabled />}
                     <button className='self-end bg-light-purple text-white rounded px-4 py-1 drop-shadow-md' type='submit'>แสดงความคิดเห็น</button>
                 </form>
                 {review && review.length > 0 ? review.map((item) =>

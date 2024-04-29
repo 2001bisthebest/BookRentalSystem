@@ -22,7 +22,6 @@ const LoginPage = () => {
             password: data.get("password")
         }
         await axios.post(process.env.REACT_APP_API + '/login', login).then((res) => {
-            console.log(res.data)
             dispatch(loginRedux({
                 username: res.data.payload.user.username,
                 id: res.data.payload.user.id,
@@ -30,7 +29,12 @@ const LoginPage = () => {
             }))
             localStorage.setItem('token', res.data.token)
             navigate('/')
-        }).catch(err => console.log(err))
+        }).catch(err => {
+            console.log(err)
+            if (err.response.status === 400) {
+                alert('Username or Password is invalid!! Please try again.')
+            }
+        })
     }
     return (
         <div className='bg-dark-purple w-screen h-screen flex flex-col gap-10 justify-center items-center font-noto-sans-thai'>
