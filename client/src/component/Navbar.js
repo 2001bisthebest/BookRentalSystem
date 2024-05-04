@@ -113,8 +113,6 @@ const Navbar = () => {
             <div className='text-white font-semibold'>
                 <Link to={'/'}><p>Little Reader</p></Link>
             </div>
-
-
             {isAdminBar ?
                 <div className='flex justify-between items-center gap-5'>
                     <div className='relative flex justify-between items-center bg-light-purple rounded-2xl px-2 text-white'>
@@ -126,18 +124,17 @@ const Navbar = () => {
                         <SearchSVG className='z-40' />
                     </div>
                     <button onClick={openMenu}>
-                        <div className='w-10 h-10'>
-                            <img className='w-full h-full rounded-full' src={process.env.REACT_APP_IMG + '/' + adminInfo.file} />
-                        </div>
+                        {adminInfo.file != null ?
+                            <div className='w-10 h-10'>
+                                <img className='w-full h-full rounded-full' src={process.env.REACT_APP_IMG + '/' + adminInfo.file} />
+                            </div>
+                            : <UserSVG />}
                         {isClick ?
                             (<div className='absolute top-18 right-4 m-1 p-2 flex flex-col items-center gap-2 w-40 bg-light-purple text-white rounded-lg z-40'>
-                                <button className='w-full flex flex-col items-center' onClick={onClickToStoreInfo}>ข้อมูลร้านเช่า</button>
-                                <hr className='w-3/4' />
-                                <button className='w-full flex flex-col items-center' onClick={onClickToCheck}>ยอดที่ต้องตรวจสอบ</button>
-                                <hr className='w-3/4' />
-                                <a href='/allqueuebookadmin'>คิวหนังสือของฉัน</a>
-                                <hr className='w-3/4' />
-                                {user && user.token ? <div className='w-full flex flex-col items-center'><button onClick={onClickStateToUser}>ผู้เช่ายืม</button><hr className='w-3/4' /></div> : ''}
+                                {user && user.token ? <div className='w-full flex flex-col items-center'><button className='w-full flex flex-col items-center' onClick={onClickToStoreInfo}>ข้อมูลร้านเช่า</button><hr className='w-3/4' /></div> : ''}
+                                {user && user.token ? <div className='w-full flex flex-col items-center'><button className='w-full flex flex-col items-center' onClick={onClickToCheck}>ยอดที่ต้องตรวจสอบ</button><hr className='w-3/4' /></div> : ''}
+                                {user && user.token ? <div className='w-full flex flex-col items-center'><a href='/allqueuebookadmin'>คิวหนังสือของฉัน</a><hr className='w-3/4' /></div> : ''}
+                                {user && user.token ? <div className='w-full flex flex-col items-center'><button onClick={onClickStateToUser}>ผู้เช่ายืม</button><hr className='w-3/4' /></div> : <a href='/personalinfo'>สมาชิก</a>}
                                 {user && user.token ? <button className='w-full' type='button' onClick={handleLogout}>ออกจากระบบ</button> : <a href='/login'>เข้าสู่ระบบ</a>}
                             </div>)
                             :
@@ -145,11 +142,7 @@ const Navbar = () => {
                             </div>)}
                     </button>
                 </div>
-
-
                 :
-
-
                 <div className='flex justify-between items-center gap-5'>
                     <div className='relative flex justify-between items-center bg-light-purple rounded-2xl px-2 text-white'>
                         <input type='search'

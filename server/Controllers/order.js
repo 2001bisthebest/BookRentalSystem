@@ -162,7 +162,8 @@ exports.listItemForCheck = async (req, res) => {
                 shippingDate: dateToShip,
                 file: item.file,
                 price: item.price,
-                updatedAt: item.updatedAt
+                updatedAt: item.updatedAt,
+                statusOrder: item.statusOrder
             })
         }
         res.send(orderDetail)

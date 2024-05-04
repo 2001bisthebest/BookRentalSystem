@@ -49,6 +49,19 @@ const OrderCheck = () => {
             console.log(err)
         }
     }
+    const onClickCancel = async () => {
+        try {
+            let concelResponse = await axios.put(process.env.REACT_APP_API + '/cancelorder/' + orderId.id, {}, {
+                headers: {
+                    authtoken: token
+                }
+            })
+            console.log(concelResponse)
+            navigate('/')
+        } catch (err) {
+            console.log(err)
+        }
+    }
     return (
         <div className="w-full h-full grow py-20 border flex flex-col justify-start gap-10 bg-white-bg">
             <h1 className='font-semibold text-2xl self-start px-20'>order</h1>
@@ -61,24 +74,43 @@ const OrderCheck = () => {
                     <p>สำเนาเล่มที่ {order.copyNumber}</p>
                 </div>
             </div>
-            <div className='grid grid-cols-4 justify-items-start px-20 gap-4'>
-                <p>วันที่และเวลา</p>
-                <p className='col-span-3'>{dateFormat(order.updatedAt)}</p>
-                <p>ชื่อผู้ใช้ที่จอง</p>
-                <p className='col-span-3'>{order.accUsername}</p>
-                <p>ยอดเงินที่ได้รับ</p>
-                <p className='col-span-3'>{order.price}</p>
-                <p>จัดส่งภายในวันที่</p>
-                <p className='col-span-3'>{dateFormat(order.shippingDate)}</p>
-                <p>รูปสลิปยืนยันการโอน</p>
-                <div className='h-full flex justify-center'>
-                    <img src={process.env.REACT_APP_IMG + '/' + order.file} className='h-full drop-shadow-md' />
+            {order.statusOrder === 'WaitForConfirmPaid' ?
+                <div className='grid grid-cols-4 justify-items-start px-20 gap-4'>
+                    <p>วันที่และเวลา</p>
+                    <p className='col-span-3'>{dateFormat(order.updatedAt)}</p>
+                    <p>ชื่อผู้ใช้ที่จอง</p>
+                    <p className='col-span-3'>{order.accUsername}</p>
+                    <p>ยอดเงินที่ได้รับ</p>
+                    <p className='col-span-3'>{order.price}</p>
+                    <p>จัดส่งภายในวันที่</p>
+                    <p className='col-span-3'>{dateFormat(order.shippingDate)}</p>
+                    <p>รูปสลิปยืนยันการโอน</p>
+                    <div className='h-full flex justify-center'>
+                        <img src={process.env.REACT_APP_IMG + '/' + order.file} className='h-full drop-shadow-md' />
+                    </div>
+                </div> :
+                <div className='grid grid-cols-4 justify-items-start px-20 gap-4'>
+                    <p>วันที่และเวลา</p>
+                    <p className='col-span-3'>{dateFormat(order.updatedAt)}</p>
+                    <p>ชื่อผู้ใช้ที่จอง</p>
+                    <p className='col-span-3'>{order.accUsername}</p>
+                    <p>ยอดเงินที่ได้รับ</p>
+                    <p className='col-span-3'>{order.price}</p>
+                    <p>จัดส่งภายในวันที่</p>
+                    <p className='col-span-3'>{dateFormat(order.shippingDate)}</p>
+                    <p>รูปสลิปยืนยันการโอน</p>
+                    <p className='col-span-3'>ยังไม่ได้รับยืนยันการโอน</p>
                 </div>
-            </div>
-            <div className='self-center flex gap-2'>
-                <button className='bg-light-purple px-2 py-1 text-white rounded-md' onClick={onClickConfirm}>ยืนยัน</button>
-                <button className='bg-red-btn px-2 py-1 text-white rounded-md'>ยกเลิก</button>
-            </div>
+            }
+            {order.statusOrder === 'WaitForConfirmPaid' ?
+                <div className='self-center flex gap-2'>
+                    <button className='bg-light-purple px-2 py-1 text-white rounded-md' onClick={onClickConfirm}>ยืนยัน</button>
+                    <button className='bg-red-btn px-2 py-1 text-white rounded-md' onClick={onClickCancel}>ยกเลิก</button>
+                </div> :
+                <div className='self-center flex gap-2'>
+                    <button className='bg-red-btn px-2 py-1 text-white rounded-md' onClick={onClickCancel}>ยกเลิก</button>
+                </div>
+            }
         </div>
     )
 }

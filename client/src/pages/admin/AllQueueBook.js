@@ -40,7 +40,6 @@ const AllQueueBook = () => {
                             </div>
                             <div className='flex flex-col gap-1 lg:gap-2 justify-start items-start'>
                                 <p className='font-semibold lg:text-lg'>{item.title}</p>
-                                <p>รหัสหนังสือ</p>
                             </div>
                         </div>
                         <button type='button' className='text-white self-center lg:text-lg bg-light-purple px-2 rounded' onClick={() => onClickQueue(item._id)}>ดูคิว</button>
