@@ -69,7 +69,7 @@ const OrderReturn = () => {
                     <p>สำเนาเล่มที่ {order.copyNumber}</p>
                 </div>
             </div>
-            {order.shippingFromCustomerDate != null && order.trackNumberFromCustomer != null && order.shippingNameFromCustomer != null ?
+            {order.statusOrder === 'Returned' ?
                 <div className='grid grid-cols-4 justify-items-start px-20 gap-4'>
                     <p>วันที่และเวลา</p>
                     <p className='col-span-3'>{dateFormat(order.createdAt)}</p>
@@ -113,7 +113,7 @@ const OrderReturn = () => {
                         <p className='col-span-3'>{order.shippingNameFromStore}</p>
                     </div>
                 </div>}
-            {order.shippingFromCustomerDate != null && order.trackNumberFromCustomer != null && order.shippingNameFromCustomer != null ?
+            {order.statusOrder === 'Returned' ?
                 <form onSubmit={handleSubmit} className='self-center flex flex-col gap-2 items-center'>
                     <p>กด "ยืนยัน" หากได้รับหนังสือคืนสำเร็จ</p>
                     <button type='submit' className='bg-light-purple px-2 py-1 text-white rounded-md w-16'>ยืนยัน</button>

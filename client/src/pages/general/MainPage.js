@@ -26,11 +26,12 @@ function MainPage() {
     }
     const loadDataBookRec = async () => {
         const userId = await user._id
-        await axios.get(process.env.REACT_APP_API + '/listreccomandbook/' + userId)
-            .then(res => {
-                setBookReccom(res.data)
-            })
-            .catch(err => console.log(err))
+        try {
+            let bookRecResponse = await axios.get(process.env.REACT_APP_API + '/listreccomandbook/' + userId)
+            setBookReccom(bookRecResponse.data)
+        } catch (err) {
+            console.log(err)
+        }
     }
     return (
         <div className="w-full h-full grow py-8 border flex flex-col justify-center gap-20 bg-white-bg">
@@ -39,13 +40,18 @@ function MainPage() {
             </div>
             <div className='flex flex-col w-full h-full px-20 items-center justify-center gap-10'>
                 <p className='font-semibold lg:text-xl'>หนังสือแนะนำ</p>
-                <div className='w-full h-full flex flex-cols gap-14 overflow-x-auto overflow-y-hidden'>
-                    {user && bookReccom.length > 0 ? bookReccom.map((item) =>
-                        <div className='flex flex-col gap-4 items-center' key={bookReccom._id}>
+                <div className='w-full h-full flex flex-cols gap-10 overflow-x-auto overflow-y-hidden'>
+                    {bookReccom.length > 1 && user != null ? bookReccom.map((item) =>
+                        <div className='flex flex-col gap-4 items-center w-40' key={bookReccom._id}>
                             <div className='relative w-20 h-20 lg:w-40 lg:h-40'>
-                                <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
-                                    <p>ว่าง</p>
-                                </div>
+                                {item.status ?
+                                    <div className='absolute top-2 right-2 w-12 h-6 rounded bg-yellow-btn text-white drop-shadow-md z-40'>
+                                        <p>รอคิว</p>
+                                    </div> :
+                                    <div className='absolute top-2 right-2 w-12 h-6 rounded bg-green-btn text-white drop-shadow-md z-40'>
+                                        <p>ว่าง</p>
+                                    </div>
+                                }
                                 <a href={`/book/${item._id}`} className='w-full h-full flex justify-center'>{item.file ? <img src={process.env.REACT_APP_IMG + "/" + item.file} className='h-full rounded-lg drop-shadow-md'></img> : ""}</a>
                             </div>
                             <div className='flex flex-col gap-1 text-sm lg:text-base'>
@@ -56,9 +62,9 @@ function MainPage() {
                     ) : <p>ยังไม่มีหนังสือแนะนำ</p>}
                 </div>
                 <p className='font-semibold lg:text-xl'>หนังสือใหม่</p>
-                <div className='w-full h-full flex flex-cols gap-14 overflow-x-auto overflow-y-hidden'>
-                    {book ? book.map((item) =>
-                        <div className='flex flex-col gap-4 items-center' key={book._id}>
+                <div className='w-full h-full flex flex-cols gap-10 overflow-x-auto overflow-y-hidden'>
+                    {book != null ? book.map((item) =>
+                        <div className='flex flex-col gap-4 items-center w-40' key={book._id}>
                             <div className='relative w-20 h-20 lg:w-40 lg:h-40'>
                                 {item.status ?
                                     <div className='absolute top-2 right-2 w-12 h-6 rounded bg-yellow-btn text-white drop-shadow-md z-40'>

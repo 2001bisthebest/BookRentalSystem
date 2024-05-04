@@ -22,8 +22,8 @@ const orderSchema = mongoose.Schema({
         ref: queue
     },
     statusOrder: {
-        type: Boolean,
-        default: false
+        type: String,
+        default: 'WaitForPaid'
     },
     price: Number,
     shippingFromStoreDate: Date,
@@ -33,13 +33,13 @@ const orderSchema = mongoose.Schema({
     shippingNameFromStore: String,
     shippingNameFromCustomer: String,
     file: String,
-    statusPaid: {
-        type: Boolean,
-        default: false
-    },
-    statusReceiveBook: {
-        type: Boolean,
-        default: false
-    }
+    // statusPaid: {
+    //     type: Boolean,
+    //     default: false
+    // },
+    // statusReceiveBook: {
+    //     type: Boolean,
+    //     default: false
+    // }
 }, { timestamps: true })
 module.exports = mongoose.model('order', orderSchema)

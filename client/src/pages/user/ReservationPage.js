@@ -28,25 +28,19 @@ const ReservationPage = () => {
     }
     useEffect(() => {
         loadData()
-        loadQueueFull()
     }, [id])
     const loadData = async () => {
-        await axios.get(process.env.REACT_APP_API + '/showbookinfopopstore/' + id)
-            .then(res => {
-                setBook(res.data)
-            })
-            .catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listbookcopy/' + id)
-            .then(res => {
-                setBookCopy(res.data)
-            })
-            .catch(err => console.log(err))
-    }
-    const loadQueueFull = async () => {
-        await axios.get(process.env.REACT_APP_API + '/queuefulllist/' + id)
-            .then(res => {
-                setQueueFullList(res.data)
-            })
+        try {
+            let queueFullListRes = await axios.get(process.env.REACT_APP_API + '/queuefulllist/' + id)
+            setQueueFullList(queueFullListRes.data)
+            console.log(queueFullListRes.data)
+            let bookRes = await axios.get(process.env.REACT_APP_API + '/showbookinfopopstore/' + id)
+            setBook(bookRes.data)
+            let bookCopyRes = await axios.get(process.env.REACT_APP_API + '/listbookcopy/' + id)
+            setBookCopy(bookCopyRes.data)
+        } catch (err) {
+            console.log(err)
+        }
     }
     const checkStatus = () => {
         return bookCopy.every(item => item.status === true)

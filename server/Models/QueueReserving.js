@@ -23,12 +23,8 @@ const queueReservingSchema = mongoose.Schema({
         ref: Store
     },
     reservationStatus: {
-        type: Boolean,
-        default: false
-    },
-    createOrderStatus: {
-        type: Boolean,
-        default: false
+        type: String,
+        default: 'Reserve'
     },
     startDate: {
         type: Date,

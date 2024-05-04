@@ -11,7 +11,6 @@ import Sidebar from '../component/Sidebar'
 const UserRoute = ({ children }) => {
     const { user } = useSelector((state) => (state.user))
     const queryClient = new QueryClient()
-    console.log('User', user)
     return (
         <div className='grid grid-cols-4 lg:grid-cols-5 w-full h-full font-noto-sans-thai'>
             <div className='col-span-full w-full h-full'>

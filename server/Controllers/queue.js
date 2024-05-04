@@ -24,7 +24,7 @@ exports.create = async (req, res) => {
                 endDate
             })
         } else {
-            const queueReserved = await QueueReserve.find({ BookId: bookId, reservationStatus: false }).exec()
+            const queueReserved = await QueueReserve.find({ BookId: bookId, $or: [{ reservationStatus: 'Reserve' }, { reservationStatus: 'CreateToOrder' }] }).exec()
             const store = await Store.findOne({ _id: book.storeId }).exec()
             var idItemCantUse = new Array()
             let startDateFromReq = new Date(startDate)
@@ -68,7 +68,7 @@ exports.create = async (req, res) => {
 exports.queuelist = async (req, res) => {
     try {
         const bookId = req.params.id
-        const queue = await QueueReserve.find({ BookId: bookId, createOrderStatus: false }).populate("AccId", "username").populate("CopyId", "copyNumber").exec()
+        const queue = await QueueReserve.find({ BookId: bookId, reservationStatus: 'Reserve' }).populate("AccId", "username").populate("CopyId", "copyNumber").sort({ startDate: 1 }).exec()
         console.log(queue)
         res.send(queue)
     } catch (err) {
@@ -80,18 +80,34 @@ exports.queueFullList = async (req, res) => {
     try {
         const bookId = req.params.id
         const bookCopyStatus = await BookCopy.find({ BookId: bookId, status: false }).exec()
+        const bookCopyStatusForOneCopy = await BookCopy.find({ BookId: bookId }).exec()
         const bookCopyFirst = await BookCopy.findOne({ copyNumber: 1 }).exec()
         var queueFullList = new Array({
-            startDate: '',
-            endDate: ''
+            startDate: null,
+            endDate: null
         })
         const book = await Book.findOne({ _id: bookId }).exec()
         //check bookCopy status avaliable
+        // console.log(bookCopyStatusForOneCopy.length)
+        if (bookCopyStatusForOneCopy.length === 1) {
+            let store = await Store.findOne({ _id: book.storeId }).exec()
+            let queue = await QueueReserve.find({ BookId: bookId, $or: [{ reservationStatus: 'Reserve' }, { reservationStatus: 'CreateToOrder' }] }).exec()
 
+            for (let item of queue) {
+                let currentDate = new Date(item.startDate);
+                currentDate.setDate(currentDate.getDate() - store.numberOfDayForShipping - 1)
+                let newEndDate = new Date(item.endDate)
+                newEndDate.setDate(newEndDate.getDate() + store.numberOfDayForShipping)
+                queueFullList.push({
+                    startDate: currentDate,
+                    endDate: newEndDate
+                })
+            }
+        }
         if (bookCopyStatus.length < 1) {
             const queueFirst = await QueueReserve.find({ CopyId: bookCopyFirst._id }).exec()
-            const queueReserved = await QueueReserve.find({ BookId: bookId, reservationStatus: false, CopyId: { $nin: bookCopyFirst._id } }).exec()
-            const store = await Store.findOne({ _id: book.storeId }).exec()
+            const queueReserved = await QueueReserve.find({ BookId: bookId, $or: [{ reservationStatus: 'Reserve' }, { reservationStatus: 'CreateToOrder' }], CopyId: { $nin: bookCopyFirst._id } }).exec()
+            let store = await Store.findOne({ _id: book.storeId }).exec()
             var rangeDateFisrt = new Array()
             queueFirst.map((item) => {
                 let currentDate = new Date(item.startDate);
@@ -116,7 +132,7 @@ exports.queueFullList = async (req, res) => {
                 let maxDate = new Date(1)
                 rangeDate.forEach((day) => {
                     rangeDateFisrt.forEach((dayFirst) => {
-                        console.log(new Date(dayFirst))
+                        // console.log(new Date(dayFirst))
                         if (dayFirst === day) {
                             let setDay = new Date(dayFirst)
                             if (minDate.getTime() >= setDay.getTime()) {
@@ -134,7 +150,6 @@ exports.queueFullList = async (req, res) => {
                     endDate: maxDate
                 })
             })
-
         }
         res.send(queueFullList)
     } catch (err) {
@@ -145,7 +160,7 @@ exports.queueFullList = async (req, res) => {
 exports.queueListStore = async (req, res) => {
     try {
         const storeId = req.params.id
-        const queue = await QueueReserve.find({ StoreId: storeId, createOrderStatus: false }).exec()
+        const queue = await QueueReserve.find({ StoreId: storeId, reservationStatus: 'Reserve' }).exec()
         function filterDuplicates(array) {
             var uniqueArray = array.filter((item, index) => {
                 // Check if the index of the current item is equal to the first occurrence of the item
@@ -170,15 +185,15 @@ exports.queueListStore = async (req, res) => {
         res.status(500).send('Server Error')
     }
 }
-exports.deleteQueue = async (req, res) => {
+exports.cancelQueue = async (req, res) => {
     try {
         const id = req.params.id
-        const queue = await QueueReserve.findOne({ _id: id }).exec()
+        const queue = await QueueReserve.findOneAndUpdate({ _id: id }, { reservationStatus: 'Cancel' }).exec()
         const queueBook = await QueueReserve.find({ BookId: queue.BookId, CopyId: { _id: queue.CopyId._id } }).exec()
         if (queueBook.length === 1) {
             const book = await BookCopy.findOneAndUpdate({ _id: queue.CopyId._id }, { status: false }, { new: true }).exec()
         }
-        const queueDelete = await QueueReserve.deleteOne({ _id: id }).exec()
+        // const queueDelete = await QueueReserve.deleteOne({ _id: id }).exec()
         res.send('Cancel success!')
     }
     catch (err) {
@@ -189,7 +204,7 @@ exports.deleteQueue = async (req, res) => {
 exports.queueListUser = async (req, res) => {
     try {
         const id = req.params.id
-        const queue = await QueueReserve.find({ AccId: id, createOrderStatus: false }).populate('BookId').populate('StoreId').exec()
+        const queue = await QueueReserve.find({ AccId: id, reservationStatus: 'Reserve' }).populate('BookId').populate('StoreId').exec()
         res.send(queue)
     } catch (err) {
         console.log(err)

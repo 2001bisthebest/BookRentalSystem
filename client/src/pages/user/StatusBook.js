@@ -10,12 +10,14 @@ const StatusBook = ({ initialStatus }) => {
     const [user, setUser] = useState({})
     const [reserved, setReserved] = useState([])
     const [waitForPayment, setWaitForPayment] = useState([])
+    const [waitForShipping, setWaitForShipping] = useState([])
     const [shipped, setShipped] = useState([])
     const [toReturn, setToReturn] = useState([])
+    const [orderSuccess, setOrderSuccess] = useState([])
     const token = localStorage.getItem('token')
     const navigate = useNavigate();
     const [isOpenModal, setIsOpenModal] = useState(false)
-    const [waitForShipping, setWaitForShipping] = useState([])
+
     const [form, setForm] = useState({})
     const [value, setValue] = useState({
         startDate: null,
@@ -87,6 +89,16 @@ const StatusBook = ({ initialStatus }) => {
                 console.log(res.data)
             })
             .catch(err => console.log(err))
+        await axios.get(process.env.REACT_APP_API + '/listordersuccessuser/' + user._id, {
+            headers: {
+                authtoken: token
+            }
+        })
+            .then(res => {
+                setOrderSuccess(res.data)
+                console.log(res.data)
+            })
+            .catch(err => console.log(err))
     }
     const onClickCancelQueue = async (id) => {
         await axios.delete(process.env.REACT_APP_API + '/cancelqueue/' + id, {
@@ -155,6 +167,7 @@ const StatusBook = ({ initialStatus }) => {
             // setOrder(orderResponse.data)
             // navigate('/statusbookadmin/' + admin.id)
             setIsOpenModal(false)
+            window.location.reload()
         } catch (err) {
             console.log(err)
         }
@@ -227,10 +240,18 @@ const StatusBook = ({ initialStatus }) => {
                                             <p>ราคา {item.priceSummary} บาท</p>
                                         </div>
                                     </div>
-                                    <div className='self-center flex flex-col justify-center gap-2'>
-                                        <button className='font-bold text-white bg-light-purple py-1 px-3 rounded' onClick={(id) => onClickCart(item.OrderId)}>ชำระเงิน</button>
-                                        <button className='font-bold text-white bg-red-btn py-1 px-3 rounded' onClick={openModal}>ยกเลิก</button>
-                                    </div>
+                                    {item.fileSlip != null ?
+                                        <div className='self-center flex flex-col justify-center'>
+                                            <p className='font-semibold'>ชำระเงินแล้ว</p>
+                                            <p>รอการตรวจสอบ</p>
+                                        </div>
+                                        :
+                                        <div className='self-center flex flex-col justify-center gap-2'>
+                                            <button className='font-bold text-white bg-light-purple py-1 px-3 rounded' onClick={(id) => onClickCart(item.OrderId)}>ชำระเงิน</button>
+                                            <button className='font-bold text-white bg-red-btn py-1 px-3 rounded' onClick={openModal}>ยกเลิก</button>
+                                        </div>
+                                    }
+
                                 </div>
                                 <hr className='w-1/3 self-center border-light-purple' />
                                 {isOpenModal ?
@@ -374,19 +395,44 @@ const StatusBook = ({ initialStatus }) => {
                         ) : <p>คุณยังไม่มีรายการที่จัดส่งแล้ว</p>}
                     </div>
                 );
+            case "order-success":
+                return (
+                    <div className='relative w-full h-full'>
+                        {orderSuccess && orderSuccess.length > 0 ? orderSuccess.map((item) =>
+                            <div className='flex flex-col w-full gap-5 px-20 lg:px-32 pb-10 xl:pb-20'>
+                                <div className='flex w-full justify-between'>
+                                    <div className='flex gap-5'>
+                                        <div className='w-24 h-24 lg:w-32 lg:h-32 flex justify-center'>
+                                            <img className='h-full rounded-lg drop-shadow-md' src={process.env.REACT_APP_IMG + '/' + item.file} />
+                                        </div>
+                                        <div className='flex flex-col gap-1 lg:gap-2 items-start'>
+                                            <p className='font-semibold'>{item.title}</p>
+                                            <p>{item.storeName}</p>
+                                            <p>{dateFormat(item.startDate) + ' - ' + dateFormat(item.endDate)}</p>
+                                            <p>ส่งคืนวันที่ {dateFormat(item.shippingFromCustomerDate)}</p>
+                                            <p>เลขแทร็ก {item.trackNumberFromCustomer}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr className='w-1/3 self-center border-light-purple' />
+                            </div>
+                        ) : <p>คุณยังไม่มีหนังสือที่เคยเช่า</p>}
+                    </div>
+                );
             default:
                 return <h2>Login or Register first</h2>;
         }
     };
     return (
-        <div className="w-full h-full xl:h-screen grow py-8 flex flex-col justify-start items-center gap-8 bg-white-bg">
+        <div className="w-full h-full grow py-8 flex flex-col justify-start items-center gap-8 bg-white-bg">
             <h1 className='text-xl font-bold self-start px-20'>สถานะหนังสือ</h1>
-            <div className='flex justify-center gap-5 lg:gap-10 font-bold px-10 flex-wrap'>
+            <div className='flex justify-center gap-5 lg:gap-10 font-bold px-10 flex-nowrap '>
                 <button className='focus:underline focus:underline-offset-8 focus:decoration-light-purple' name='reserved' onClick={(e) => onClickStatus(e)}>จองแล้ว</button>
                 <button className='focus:underline focus:underline-offset-8 focus:decoration-light-purple' name='pending' onClick={(e) => onClickStatus(e)}>รอการชำระเงิน</button>
                 <button className='focus:underline focus:underline-offset-8 focus:decoration-light-purple' name='wait-for-shipment' onClick={(e) => onClickStatus(e)}>รอการจัดส่ง</button>
                 <button className='focus:underline focus:underline-offset-8 focus:decoration-light-purple' name='shipped' onClick={(e) => onClickStatus(e)}>จัดส่งแล้ว</button>
                 <button className='focus:underline focus:underline-offset-8 focus:decoration-light-purple' name='wait-for-return' onClick={(e) => onClickStatus(e)}>รอการส่งคืน</button>
+                <button className='focus:underline focus:underline-offset-8 focus:decoration-light-purple' name='order-success' onClick={(e) => onClickStatus(e)}>หนังสือที่เคยยืม</button>
             </div>
             <div className='w-full'>
                 {renderContent()}

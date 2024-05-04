@@ -15,30 +15,28 @@ const BookPage = () => {
     const [checkPermissionToReview, setCheckPermissionToReview] = useState(false)
     const [store, setStore] = useState({})
     useEffect(() => {
-        if (token) {
-            currentUser(token).then(res => setUser(res.data)).catch(err => console.log(err))
-        }
         loadData()
     }, [id])
     const loadData = async () => {
         try {
-            let bookResponse = await axios.get(process.env.REACT_APP_API + '/showbookinfo/' + id)
-            setBook(bookResponse.data)
-            let bookCopyResponse = await axios.get(process.env.REACT_APP_API + '/listbookcopy/' + id)
-            setBookCopy(bookCopyResponse.data)
-            let reviewResponse = await axios.get(process.env.REACT_APP_API + '/listreview/' + id)
-            setReview(reviewResponse.data)
-            if (user != null) {
-                let permissionResponse = await axios.post(process.env.REACT_APP_API + '/checkpermissiontoreview/' + id, { accId: user._id }, {
+            if (token) {
+                let userRes = await currentUser(token)
+                setUser((userRes).data)
+                let permissionResponse = await axios.post(process.env.REACT_APP_API + '/checkpermissiontoreview/' + id, { accId: userRes.data._id }, {
                     headers: {
                         authtoken: token
                     }
                 })
                 setCheckPermissionToReview(permissionResponse.data)
             }
+            let bookResponse = await axios.get(process.env.REACT_APP_API + '/showbookinfo/' + id)
+            setBook(bookResponse.data)
+            let bookCopyResponse = await axios.get(process.env.REACT_APP_API + '/listbookcopy/' + id)
+            setBookCopy(bookCopyResponse.data)
+            let reviewResponse = await axios.get(process.env.REACT_APP_API + '/listreview/' + id)
+            setReview(reviewResponse.data)
             let storeResponse = await axios.get(process.env.REACT_APP_API + '/storeinfofrombook/' + id)
             setStore(storeResponse.data)
-            console.log(storeResponse.data)
         } catch (err) {
             console.log(err)
         }
@@ -57,7 +55,9 @@ const BookPage = () => {
         });
         console.log(form)
     }
-    console.log(checkPermissionToReview)
+    const goToStorePage = (id) => {
+        navigate('/store/' + id)
+    }
     const handleSubmit = async (e) => {
         const formResult = {
             AccId: user._id,
@@ -93,6 +93,8 @@ const BookPage = () => {
                         <p className='col-span-3'>{book.publisher}</p>
                         <p>ปีที่พิมพ์ :</p>
                         <p className='col-span-3'>{book.year}</p>
+                        <p>ISBN :</p>
+                        <p className='col-span-3'>{book.ISBN}</p>
                         <p>ราคาเช่า :</p>
                         <p className='col-span-3'>{book.price}</p>
                         <p>สถานะ</p>
@@ -118,12 +120,12 @@ const BookPage = () => {
                     <div className='rounded-full w-16 h-16'><img className='w-full h-full rounded-full' src={process.env.REACT_APP_IMG + '/' + store.file} /></div>
                     <p>{store.name}</p>
                 </div>
-                <button className='bg-light-purple text-white rounded px-4 py-2 drop-shadow-md'>ดูร้าน</button>
+                <button className='bg-light-purple text-white rounded px-4 py-2 drop-shadow-md' onClick={(id) => goToStorePage(store._id)}>ดูร้าน</button>
             </div>
             <div className='place-self-center flex flex-col bg-light-purple/20 w-5/6 px-10 py-5 rounded-md gap-5'>
                 <form className='w-full flex flex-col gap-5' onSubmit={handleSubmit}>
                     <h1 className='place-self-start font-bold text-xl'>ความคิดเห็น</h1>
-                    {user != null && checkPermissionToReview != false ? <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='comment' placeholder='รีวิวที่นี่...' onChange={e => handleChange(e)} /> : <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='review' placeholder='คุณต้องเข้าสู่ระบบ' onChange={e => handleChange(e)} disabled />}
+                    {user != null && checkPermissionToReview != false ? <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='comment' placeholder='รีวิวที่นี่...' onChange={e => handleChange(e)} /> : <input type='text' className='w-full h-20 place-self-center rounded border border-black bg-white-snow/75 p-2' name='review' placeholder='ผู้ที่เคยเช่าหนังสือเล่มนี้จึงจะสามารถแสดงความคิดเห็นได้' onChange={e => handleChange(e)} disabled />}
                     <button className='self-end bg-light-purple text-white rounded px-4 py-1 drop-shadow-md' type='submit'>แสดงความคิดเห็น</button>
                 </form>
                 {review && review.length > 0 ? review.map((item) =>

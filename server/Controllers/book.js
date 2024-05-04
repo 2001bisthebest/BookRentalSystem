@@ -7,7 +7,7 @@ const Order = require("../Models/Order")
 
 exports.addBook = async (req, res) => {
     try {
-        const { title, author, translator, publisher, year, price } = req.body
+        const { title, author, ISBN, translator, publisher, year, price } = req.body
         var file
         if (req.file) {
             file = req.file.filename
@@ -16,6 +16,7 @@ exports.addBook = async (req, res) => {
         var book = await new Book({
             storeId,
             title,
+            ISBN,
             author,
             translator,
             publisher,
@@ -24,7 +25,7 @@ exports.addBook = async (req, res) => {
             file
         })
         await Book(book).save()
-        res.send('Add book success!')
+        res.send(book)
     } catch (err) {
         console.log(err)
         res.status(500).send(err)
@@ -63,7 +64,25 @@ exports.listBookFromStore = async (req, res) => {
     try {
         const id = req.params.id
         const bookList = await Book.find({ storeId: id }).exec()
-        res.send(bookList)
+        var listBookWithStatus = []
+        for (let value of bookList) {
+            let bookCopy = await BookCopy.find({ BookId: value._id }).exec()
+            let status = []
+            bookCopy.map((bookItem) => {
+                status.push(bookItem.status)
+            })
+            const isAvaliable = (cur) => cur === true
+            const result = status.every(isAvaliable)
+            let bookWithStatus = {
+                _id: value._id,
+                title: value.title,
+                price: value.price,
+                file: value.file,
+                status: result
+            }
+            listBookWithStatus.push(bookWithStatus)
+        }
+        res.send(listBookWithStatus)
     } catch (err) {
         console.log(err)
         res.status(500).send(err)
@@ -183,6 +202,21 @@ exports.addBookPref = async (req, res) => {
             CategoryId: CategoryId
         }).save()
         res.send(bookPref)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.showBookPref = async (req, res) => {
+    try {
+        const AccId = req.params.id
+        const bookPref = await BookPreference.findOne({ AccId: AccId }).exec()
+        let nameOfCategory = []
+        for (let item of bookPref.CategoryId) {
+            let name = await Category.findOne({ _id: item }).exec()
+            nameOfCategory.push(name)
+        }
+        res.send(nameOfCategory)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')
@@ -323,13 +357,30 @@ exports.checkPermissionToReview = async (req, res) => {
         const bookCopy = await BookCopy.find({ BookId: bookId }).exec()
         var rentAlready = false
         for (let item of bookCopy) {
-            let order = await Order.findOne({ AccId: accId, CopyId: item._id, statusOrder: true }).exec()
+            let order = await Order.findOne({ AccId: accId, CopyId: item._id, statusOrder: 'Complete' }).exec()
             if (order != null) {
                 rentAlready = true
                 break
             }
         }
         res.send(rentAlready)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.popularBook = async (req, res) => {
+    try {
+        // const book = await Book.find({ ISBN: ISBN }).exec()
+        const order = await Order.find({ statusOrder: 'Complete' }).exec()
+        let numISBN = []
+        for (let item of order) {
+            let bookCopy = await BookCopy.findOne({ _id: item.CopyId }).exec()
+            let book = await Book.findOne({ _id: bookCopy.BookId }).exec()
+            numISBN.push(book.ISBN)
+        }
+        console.log(numISBN)
+        res.send(order)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')

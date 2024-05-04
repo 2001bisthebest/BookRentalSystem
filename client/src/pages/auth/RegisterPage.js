@@ -1,11 +1,14 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { login as loginRedux } from '../../store/userSlice'
 
 const RegisterPage = () => {
     const [form, setForm] = useState({ bookPref: [] })
     const navigate = useNavigate()
     const [category, setCategory] = useState([])
+    const dispatch = useDispatch()
     useEffect(() => {
         loadData()
     }, [])
@@ -61,6 +64,7 @@ const RegisterPage = () => {
             telephone: formWithImgData.get("telephone"),
             file: formWithImgData.get("file"),
         };
+        console.log(register)
         try {
             const response = await axios.post(process.env.REACT_APP_API + '/register', register);
             console.log(response.data);
@@ -71,6 +75,24 @@ const RegisterPage = () => {
                     AccId: userId._id,
                     CategoryId: form.bookPref
                 });
+                let login = {
+                    username: formWithImgData.get("username"),
+                    password: formWithImgData.get("password")
+                }
+                await axios.post(process.env.REACT_APP_API + '/login', login).then((res) => {
+                    dispatch(loginRedux({
+                        username: res.data.payload.user.username,
+                        id: res.data.payload.user.id,
+                        token: res.data.token
+                    }))
+                    localStorage.setItem('token', res.data.token)
+                    // navigate('/')
+                }).catch(err => {
+                    console.log(err)
+                    if (err.response.status === 400) {
+                        alert('Username or Password is invalid!! Please try again.')
+                    }
+                })
                 navigate('/');
             } else {
                 console.error("Invalid user ID returned from registration.");

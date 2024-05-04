@@ -29,7 +29,6 @@ exports.addStore = async (req, res) => {
         console.log(store)
         await Store(store).save()
         res.send('Add store success')
-        // const addStore = await Store.
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')

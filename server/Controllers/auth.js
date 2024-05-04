@@ -8,6 +8,7 @@ exports.register = async (req, res) => {
         //1. check user
         const { username, password, name, email, address, telephone } = req.body
         var file
+        console.log(req.body)
         if (req.file) {
             file = req.file.filename
         }

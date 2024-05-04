@@ -56,7 +56,9 @@ const CartPage = () => {
                 }
             })
             console.log(submitResponse)
-            navigate('/')
+            if (submitResponse) {
+                navigate('/')
+            }
         } catch (err) {
             console.log(err)
         }
@@ -125,7 +127,7 @@ const CartPage = () => {
                         </div>
                     ) : ''}
                 </div>
-                <button className='self-center bg-light-purple px-2 py-1 text-white rounded-md' onClick={openModal}>อัพโหลดสลิป</button>
+                <button className='self-center bg-light-purple px-2 py-1 text-white rounded-md' type='button' onClick={openModal}>อัพโหลดสลิป</button>
             </div>
             <button type='submit' className='self-center bg-light-purple px-4 py-1 text-white rounded-md text-lg lg:text-xl font-bold'>ยืนยันการชำระเงิน</button>
             {isOpenModal ?

@@ -19,7 +19,7 @@ exports.addReview = async (req, res) => {
 exports.listReview = async (req, res) => {
     try {
         const bookId = req.params.id
-        const review = await Review.find({ BookId: bookId }).populate("AccId", "username").exec()
+        const review = await Review.find({ BookId: bookId }).populate("AccId", "username").sort({ createdAt: -1 }).exec()
         console.log(review)
         res.send(review)
     }

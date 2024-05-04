@@ -4,31 +4,16 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { currentAdmin } from '../../functions/auth'
 
-const AllQueueBook = ({ props }) => {
+const AllQueueBook = () => {
     const [book, setBook] = useState([])
-    const [admin, setAdmin] = useState({})
     const { user } = useSelector((state) => (state.user))
     const navigate = useNavigate()
     useEffect(() => {
         loadData();
     }, [user.id])
-    // const loadData = async () => {
-    //     await currentAdmin(user.token, user.username).then(res => setAdmin(res.data)).catch((err) => console.log(err))
-    //     await axios.get(process.env.REACT_APP_API + '/queueliststore/' + admin._id, {
-    //         headers: {
-    //             authtoken: user.token
-    //         }
-    //     })
-    //         .then((res) => {
-    //             setBook(res.data)
-    //         })
-    //         .catch(err => console.log(err))
-    // }
     const loadData = async () => {
         try {
             const adminResponse = await currentAdmin(user.token, user.username);
-            setAdmin(adminResponse.data);
-
             const bookResponse = await axios.get(process.env.REACT_APP_API + '/queueliststore/' + adminResponse.data._id, {
                 headers: {
                     authtoken: user.token
@@ -50,7 +35,9 @@ const AllQueueBook = ({ props }) => {
                 <div className='flex flex-col gap-5 lg:gap-10 w-full ' key={item._id}>
                     <div className='flex w-full justify-between'>
                         <div className='flex gap-5 lg:gap-10'>
-                            <img src={process.env.REACT_APP_IMG + '/' + item.file} className='w-28 h-28 lg:w-36 lg:h-36 rounded-lg' />
+                            <div className='w-28 h-28 lg:w-36 lg:h-36 flex justify-center'>
+                                <img src={process.env.REACT_APP_IMG + '/' + item.file} className='h-full rounded-lg' />
+                            </div>
                             <div className='flex flex-col gap-1 lg:gap-2 justify-start items-start'>
                                 <p className='font-semibold lg:text-lg'>{item.title}</p>
                                 <p>รหัสหนังสือ</p>

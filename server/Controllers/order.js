@@ -9,7 +9,7 @@ exports.addOrder = async (req, res) => {
     try {
         const queueId = req.params.id
         // , shippingFromCustomerDate, trackNumberFromStore, shippingNameFromStore, shippingNameFromCustomer 
-        const queue = await QueueReserving.findOneAndUpdate({ _id: queueId }, { createOrderStatus: true }, { new: true }).exec()
+        const queue = await QueueReserving.findOneAndUpdate({ _id: queueId }, { reservationStatus: 'CreateToOrder' }, { new: true }).exec()
         const book = await Book.findOne({ _id: queue.BookId }).exec()
         let startD = new Date(queue.startDate)
         let endD = new Date(queue.endDate)
@@ -32,34 +32,60 @@ exports.addOrder = async (req, res) => {
 exports.listOrderForAcc = async (req, res) => {
     try {
         const accId = req.params.id
-        const order = await Order.find({ AccId: accId, statusOrder: false, file: null }).populate('QueueId').exec()
+        const order = await Order.find({ AccId: accId, $or: [{ statusOrder: 'WaitForPaid' }, { statusOrder: 'WaitForConfirmPaid' }] }).populate('QueueId').exec()
         var bookId = []
         var book = []
         for (let value of order) {
             let bookFromCopy, orderWithPriceAndDate
             bookFromCopy = await BookCopy.findOne({ _id: value.CopyId }).exec()
-            orderWithPriceAndDate = {
-                OrderId: value._id,
-                BookId: bookFromCopy.BookId,
-                priceSummary: value.price,
-                startDate: value.QueueId.startDate,
-                endDate: value.QueueId.endDate
+            if (value.file != null) {
+                orderWithPriceAndDate = {
+                    OrderId: value._id,
+                    BookId: bookFromCopy.BookId,
+                    priceSummary: value.price,
+                    startDate: value.QueueId.startDate,
+                    endDate: value.QueueId.endDate,
+                    file: value.file
+                }
+            } else {
+                orderWithPriceAndDate = {
+                    OrderId: value._id,
+                    BookId: bookFromCopy.BookId,
+                    priceSummary: value.price,
+                    startDate: value.QueueId.startDate,
+                    endDate: value.QueueId.endDate
+                }
             }
             bookId.push(orderWithPriceAndDate)
         }
         for (let item of bookId) {
             let bookFromId, bookInfo
             bookFromId = await Book.findOne({ _id: item.BookId }).populate('storeId', 'name').exec()
-            bookInfo = {
-                OrderId: item.OrderId,
-                BookId: item.BookId,
-                priceSummary: item.priceSummary,
-                startDate: item.startDate,
-                endDate: item.endDate,
-                file: bookFromId.file,
-                StoreId: bookFromId.storeId._id,
-                storeName: bookFromId.storeId.name,
-                title: bookFromId.title
+            if (item.file != null) {
+                bookInfo = {
+                    OrderId: item.OrderId,
+                    BookId: item.BookId,
+                    priceSummary: item.priceSummary,
+                    startDate: item.startDate,
+                    endDate: item.endDate,
+                    file: bookFromId.file,
+                    StoreId: bookFromId.storeId._id,
+                    storeName: bookFromId.storeId.name,
+                    title: bookFromId.title,
+                    fileSlip: item.file
+                }
+            } else {
+                bookInfo = {
+                    OrderId: item.OrderId,
+                    BookId: item.BookId,
+                    priceSummary: item.priceSummary,
+                    startDate: item.startDate,
+                    endDate: item.endDate,
+                    file: bookFromId.file,
+                    StoreId: bookFromId.storeId._id,
+                    storeName: bookFromId.storeId.name,
+                    title: bookFromId.title
+                }
             }
             book.push(bookInfo)
         }
@@ -92,10 +118,10 @@ exports.showOrderForAcc = async (req, res) => {
         res.status(500).send('Server Error')
     }
 }
-exports.deleteOrder = async (req, res) => {
+exports.cancelOrder = async (req, res) => {
     try {
         const orderId = req.params.id
-        const order = await Order.findOne({ _id: orderId }).exec()
+        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusOrder: 'Cancel' }).exec()
         res.send(order)
     } catch (err) {
         console.log(err)
@@ -109,7 +135,7 @@ exports.addUploadPayment = async (req, res) => {
         if (req.file) {
             file = req.file.filename
         }
-        const order = await Order.findOneAndUpdate({ _id: orderId }, { file: file }, { new: true }).exec()
+        const order = await Order.findOneAndUpdate({ _id: orderId }, { file: file, statusOrder: 'WaitForConfirmPaid' }, { new: true }).exec()
         res.send(order)
     } catch (err) {
         console.log(err)
@@ -119,7 +145,7 @@ exports.addUploadPayment = async (req, res) => {
 exports.listItemForCheck = async (req, res) => {
     try {
         const storeId = req.params.id
-        const order = await Order.find({ StoreId: storeId, file: { $ne: null }, statusPaid: false }).exec()
+        const order = await Order.find({ StoreId: storeId, $or: [{ statusOrder: 'WaitForConfirmPaid' }, { statusOrder: 'WaitForPaid' }] }).exec()
         let orderDetail = []
         const store = await Store.findOne({ _id: storeId }).exec()
         for (let item of order) {
@@ -176,7 +202,7 @@ exports.orderForCheck = async (req, res) => {
 exports.orderConfirmCheck = async (req, res) => {
     try {
         const orderId = req.params.id
-        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusPaid: true }, { new: true }).exec()
+        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusOrder: 'WaitForShipping' }, { new: true }).exec()
         res.send(order)
     } catch (err) {
         console.log(err)
@@ -186,7 +212,7 @@ exports.orderConfirmCheck = async (req, res) => {
 exports.listItemForShipping = async (req, res) => {
     try {
         const storeId = req.params.id
-        const order = await Order.find({ StoreId: storeId, file: { $ne: null }, statusPaid: true, shippingFromStoreDate: null, shippingNameFromStore: null }).exec()
+        const order = await Order.find({ StoreId: storeId, $or: [{ statusOrder: 'WaitForShipping' }, { statusOrder: 'Shipped' }] }).sort({ statusOrder: -1 }).exec()
         let orderDetail = []
         const store = await Store.findOne({ _id: storeId }).exec()
         for (let item of order) {
@@ -202,7 +228,7 @@ exports.listItemForShipping = async (req, res) => {
                 title: book.title,
                 shippingDate: dateToShip,
                 file: item.file,
-                statusPaid: item.statusPaid,
+                statusOrder: item.statusOrder,
                 updatedAt: item.updatedAt
             })
         }
@@ -223,17 +249,37 @@ exports.orderForShipping = async (req, res) => {
         let queue = await QueueReserving.findOne({ _id: order.QueueId }).exec()
         let startDate = new Date(queue.startDate)
         let dateToShip = new Date(startDate.getTime() - (store.numberOfDayForShipping * 24 * 60 * 60 * 1000))
-        let orderDetail = {
-            orderId: order._id,
-            copyNumber: bookCopy.copyNumber,
-            accUsername: user.username,
-            title: book.title,
-            shippingDate: dateToShip,
-            statusPaid: order.statusPaid,
-            createdAt: order.createdAt,
-            bookFile: book.file,
-            startDate: queue.startDate,
-            endDate: queue.endDate
+        let orderDetail
+        console.log(order.statusOrder)
+        if (order.statusOrder === 'WaitForShipping') {
+            orderDetail = {
+                orderId: order._id,
+                copyNumber: bookCopy.copyNumber,
+                accUsername: user.username,
+                title: book.title,
+                shippingDate: dateToShip,
+                statusOrder: order.statusOrder,
+                createdAt: order.createdAt,
+                bookFile: book.file,
+                startDate: queue.startDate,
+                endDate: queue.endDate
+            }
+        } else {
+            orderDetail = {
+                orderId: order._id,
+                copyNumber: bookCopy.copyNumber,
+                accUsername: user.username,
+                title: book.title,
+                shippingDate: dateToShip,
+                statusOrder: order.statusOrder,
+                createdAt: order.createdAt,
+                bookFile: book.file,
+                startDate: queue.startDate,
+                endDate: queue.endDate,
+                trackNumberFromStore: order.trackNumberFromStore,
+                shippingFromStoreDate: order.shippingFromStoreDate,
+                shippingNameFromStore: order.shippingNameFromStore
+            }
         }
         res.send(orderDetail)
     } catch (err) {
@@ -245,7 +291,7 @@ exports.addShippingDay = async (req, res) => {
     try {
         const orderId = req.params.id
         const { shippingFromStoreDate, shippingNameFromStore, trackNumberFromStore } = req.body
-        const order = await Order.findOneAndUpdate({ _id: orderId }, { shippingFromStoreDate: shippingFromStoreDate.startDate, shippingNameFromStore: shippingNameFromStore, trackNumberFromStore: trackNumberFromStore }, { new: true }).exec()
+        const order = await Order.findOneAndUpdate({ _id: orderId }, { shippingFromStoreDate: shippingFromStoreDate, shippingNameFromStore: shippingNameFromStore, trackNumberFromStore: trackNumberFromStore, statusOrder: 'Shipped' }, { new: true }).exec()
         res.send(order)
     } catch (err) {
         console.log(err)
@@ -255,7 +301,7 @@ exports.addShippingDay = async (req, res) => {
 exports.listItemForReturn = async (req, res) => {
     try {
         const storeId = req.params.id
-        const order = await Order.find({ StoreId: storeId, file: { $ne: null }, statusPaid: true, shippingFromStoreDate: { $ne: null }, shippingNameFromStore: { $ne: null }, trackNumberFromStore: { $ne: null } }).sort({ updatedAt: -1 }).exec()
+        const order = await Order.find({ StoreId: storeId, $or: [{ statusOrder: 'WaitForReturn' }, { statusOrder: 'Returned' }] }).sort({ updatedAt: -1 }).exec()
         let orderDetail = []
         const store = await Store.findOne({ _id: storeId }).exec()
         for (let item of order) {
@@ -265,34 +311,30 @@ exports.listItemForReturn = async (req, res) => {
             let queue = await QueueReserving.findOne({ _id: item.QueueId }).exec()
             let startDate = new Date(queue.startDate)
             let dateToShip = new Date(startDate.getTime() - (store.numberOfDayForShipping * 24 * 60 * 60 * 1000))
-            let statusShippingReturn = false
-            if (!item.statusOrder) {
-                if (item.shippingFromCustomerDate && item.shippingNameFromCustomer && item.trackNumberFromCustomer) {
-                    statusShippingReturn = true
-                    orderDetail.push({
-                        orderId: item._id,
-                        accUsername: user.username,
-                        title: book.title,
-                        shippingDate: dateToShip,
-                        endDate: queue.endDate,
-                        file: item.file,
-                        statusPaid: item.statusPaid,
-                        updatedAt: item.updatedAt,
-                        statusShippingReturn: statusShippingReturn,
-                        shippingFromCustomerDate: item.shippingFromCustomerDate,
-                        trackNumberFromCustomer: item.trackNumberFromCustomer,
-                        shippingNameFromCustomer: item.shippingNameFromCustomer
-                    })
-                } else {
-                    orderDetail.push({
-                        orderId: item._id,
-                        accUsername: user.username,
-                        title: book.title,
-                        updatedAt: item.updatedAt,
-                        endDate: queue.endDate,
-                        statusShippingReturn: statusShippingReturn
-                    })
-                }
+            console.log(order)
+            if (item.statusOrder === 'Returned') {
+                orderDetail.push({
+                    orderId: item._id,
+                    accUsername: user.username,
+                    title: book.title,
+                    shippingDate: dateToShip,
+                    endDate: queue.endDate,
+                    file: item.file,
+                    statusOrder: item.statusOrder,
+                    updatedAt: item.updatedAt,
+                    shippingFromCustomerDate: item.shippingFromCustomerDate,
+                    trackNumberFromCustomer: item.trackNumberFromCustomer,
+                    shippingNameFromCustomer: item.shippingNameFromCustomer
+                })
+            } else {
+                orderDetail.push({
+                    orderId: item._id,
+                    accUsername: user.username,
+                    title: book.title,
+                    updatedAt: item.updatedAt,
+                    endDate: queue.endDate,
+                    statusOrder: item.statusOrder
+                })
             }
         }
         res.send(orderDetail)
@@ -304,7 +346,7 @@ exports.listItemForReturn = async (req, res) => {
 exports.listWaitForShipping = async (req, res) => {
     try {
         const accId = req.params.id
-        const order = await Order.find({ AccId: accId, statusPaid: true, shippingFromStoreDate: null, shippingNameFromStore: null, trackNumberFromStore: null }).populate('QueueId').exec()
+        const order = await Order.find({ AccId: accId, statusOrder: 'WaitForShipping' }).populate('QueueId').exec()
         var bookId = []
         var book = []
         for (let value of order) {
@@ -358,14 +400,13 @@ exports.orderForReturn = async (req, res) => {
         let startDate = new Date(queue.startDate)
         let dateToShip = new Date(startDate.getTime() - (store.numberOfDayForShipping * 24 * 60 * 60 * 1000))
         let orderDetail
-        if (order.shippingFromCustomerDate != null && order.trackNumberFromCustomer != null && order.shippingNameFromCustomer != null) {
+        if (order.statusOrder === 'Returned') {
             orderDetail = {
                 orderId: order._id,
                 copyNumber: bookCopy.copyNumber,
                 accUsername: user.username,
                 title: book.title,
                 shippingDate: dateToShip,
-                statusPaid: order.statusPaid,
                 createdAt: order.createdAt,
                 bookFile: book.file,
                 startDate: queue.startDate,
@@ -385,7 +426,6 @@ exports.orderForReturn = async (req, res) => {
                 accUsername: user.username,
                 title: book.title,
                 shippingDate: dateToShip,
-                statusPaid: order.statusPaid,
                 createdAt: order.createdAt,
                 bookFile: book.file,
                 startDate: queue.startDate,
@@ -396,7 +436,6 @@ exports.orderForReturn = async (req, res) => {
                 statusOrder: order.statusOrder
             }
         }
-
         res.send(orderDetail)
     } catch (err) {
         console.log(err)
@@ -406,7 +445,7 @@ exports.orderForReturn = async (req, res) => {
 exports.listShipped = async (req, res) => {
     try {
         const accId = req.params.id
-        const order = await Order.find({ AccId: accId, statusPaid: true, shippingFromStoreDate: { $ne: null }, shippingNameFromStore: { $ne: null }, trackNumberFromStore: { $ne: null }, statusReceiveBook: false }).populate('QueueId').exec()
+        const order = await Order.find({ AccId: accId, statusOrder: 'Shipped' }).populate('QueueId').exec()
         var bookId = []
         var book = []
         for (let value of order) {
@@ -451,7 +490,7 @@ exports.listShipped = async (req, res) => {
 exports.confirmReceiveBook = async (req, res) => {
     try {
         const orderId = req.params.id
-        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusReceiveBook: true }, { new: true }).exec()
+        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusOrder: 'WaitForReturn' }, { new: true }).exec()
         res.send(order)
     } catch (err) {
         console.log(err)
@@ -461,7 +500,7 @@ exports.confirmReceiveBook = async (req, res) => {
 exports.listWaitForReturn = async (req, res) => {
     try {
         const accId = req.params.id
-        const order = await Order.find({ AccId: accId, statusPaid: true, shippingFromStoreDate: { $ne: null }, shippingNameFromStore: { $ne: null }, trackNumberFromStore: { $ne: null }, statusReceiveBook: true }).populate('QueueId').exec()
+        const order = await Order.find({ AccId: accId, statusOrder: 'WaitForReturn' }).populate('QueueId').exec()
         var bookId = []
         var book = []
         for (let value of order) {
@@ -534,7 +573,7 @@ exports.addReturnInfo = async (req, res) => {
     try {
         const orderId = req.params.id
         const { shippingFromCustomerDate, trackNumberFromCustomer, shippingNameFromCustomer } = req.body
-        const order = await Order.findOneAndUpdate({ _id: orderId }, { shippingFromCustomerDate: shippingFromCustomerDate, trackNumberFromCustomer: trackNumberFromCustomer, shippingNameFromCustomer: shippingNameFromCustomer }, { new: true }).exec()
+        const order = await Order.findOneAndUpdate({ _id: orderId }, { shippingFromCustomerDate: shippingFromCustomerDate, trackNumberFromCustomer: trackNumberFromCustomer, shippingNameFromCustomer: shippingNameFromCustomer, statusOrder: 'Returned' }, { new: true }).exec()
         res.send(order)
     } catch (err) {
         console.log(err)
@@ -544,9 +583,54 @@ exports.addReturnInfo = async (req, res) => {
 exports.confirmOrderComplete = async (req, res) => {
     try {
         const orderId = req.params.id
-        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusOrder: true }, { new: true }).exec()
-        const queue = await QueueReserving.findOneAndUpdate({ _id: order.QueueId }, { reservationStatus: true }, { new: true }).exec()
+        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusOrder: 'Complete' }, { new: true }).exec()
+        const queue = await QueueReserving.findOneAndUpdate({ _id: order.QueueId }, { reservationStatus: 'Complete' }, { new: true }).exec()
+        const bookCopy = await BookCopy.findOneAndUpdate({ _id: order.CopyId }, { status: false }).exec()
         res.send(order)
+    } catch (err) {
+        console.log(err)
+        res.status(500).send('Server Error')
+    }
+}
+exports.listOrderSuccessUser = async (req, res) => {
+    try {
+        const accId = req.params.id
+        const order = await Order.find({ AccId: accId, statusOrder: 'Complete' }).populate('QueueId').sort({ updatedAt: -1 }).exec()
+        var bookId = []
+        var book = []
+        for (let value of order) {
+            let bookFromCopy, orderWithPriceAndDate
+            bookFromCopy = await BookCopy.findOne({ _id: value.CopyId }).exec()
+            orderWithPriceAndDate = {
+                OrderId: value._id,
+                BookId: bookFromCopy.BookId,
+                priceSummary: value.price,
+                startDate: value.QueueId.startDate,
+                endDate: value.QueueId.endDate,
+                trackNumberFromCustomer: value.trackNumberFromCustomer,
+                shippingFromCustomerDate: value.shippingFromCustomerDate
+            }
+            bookId.push(orderWithPriceAndDate)
+        }
+        for (let item of bookId) {
+            let bookFromId, bookInfo
+            bookFromId = await Book.findOne({ _id: item.BookId }).populate('storeId', 'name').exec()
+            bookInfo = {
+                OrderId: item.OrderId,
+                BookId: item.BookId,
+                priceSummary: item.priceSummary,
+                startDate: item.startDate,
+                endDate: item.endDate,
+                file: bookFromId.file,
+                StoreId: bookFromId.storeId._id,
+                storeName: bookFromId.storeId.name,
+                title: bookFromId.title,
+                trackNumberFromCustomer: item.trackNumberFromCustomer,
+                shippingFromCustomerDate: item.shippingFromCustomerDate
+            }
+            book.push(bookInfo)
+        }
+        res.send(book)
     } catch (err) {
         console.log(err)
         res.status(500).send('Server Error')

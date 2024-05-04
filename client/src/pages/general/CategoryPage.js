@@ -43,11 +43,8 @@ const CategoryPage = () => {
                                 <p>{item.price} บาท</p>
                             </div>
                         </div>
-                    )
-                        :
-                        <div className='w-full flex flex-col gap-2 items-center'>
-                            <p>ยังไม่มีหนังสือในหมวดนี้</p>
-                        </div>
+                    ) :
+                        <p className='col-span-full'>ยังไม่มีหนังสือในหมวดนี้</p>
                     }
                 </div>
             </div>

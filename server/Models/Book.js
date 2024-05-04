@@ -7,6 +7,7 @@ const bookSchema = mongoose.Schema({
         ref: stores
     },
     title: String,
+    ISBN: Number,
     author: String,
     translator: String,
     publisher: String,

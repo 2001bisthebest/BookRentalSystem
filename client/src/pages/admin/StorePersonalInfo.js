@@ -87,9 +87,11 @@ const StorePersonalInfo = () => {
     }
     return (
         <div className="relative w-full h-full grow py-16 border flex flex-col justify-center gap-4 bg-white-bg">
-            <div className='flex flex-col items-start gap-16'>
-                <div className='flex gap-10 flex-col lg:flex-row items-center px-40 w-full'>
-                    <img className='rounded-full w-40 h-40 lg:self-start' src={process.env.REACT_APP_IMG + '/' + storeInfo.file} />
+            <div className='flex flex-col items-start gap-16 w-full'>
+                <div className='flex gap-10 flex-col lg:flex-row items-center px-20 w-full'>
+                    <div className='self-start w-40 h-40'>
+                        <img className='rounded-full w-full h-full' src={process.env.REACT_APP_IMG + '/' + storeInfo.file} />
+                    </div>
                     <div className='grid grid-cols-2 justify-items-start gap-4 py-5'>
                         <p>ร้าน</p>
                         <p>{storeInfo.name}</p>

@@ -100,7 +100,10 @@ const QueueBook = () => {
         <div className="relative w-full h-full grow py-20 border flex flex-col justify-start gap-10 bg-white-bg px-24">
             <h1 className='self-start font-bold text-lg'>คิวหนังสือ {book.title}</h1>
             <div className='flex gap-5 lg:gap-10'>
-                <img className='w-28 h-28 lg:w-36 lg:h-36 rounded-lg' src={process.env.REACT_APP_IMG + '/' + book.file} />
+                <div className='w-28 h-28 lg:w-36 lg:h-36 flex justify-center'>
+                    <img className='h-full rounded-lg' src={process.env.REACT_APP_IMG + '/' + book.file} />
+                </div>
+
                 <div className='h-1/2 grid grid-cols-2 gap-1 lg:gap-2 justify-items-start'>
                     <p className='col-span-full font-semibold'>{book.title}</p>
                     <p>สำเนาหนังสือ</p>
@@ -120,7 +123,7 @@ const QueueBook = () => {
                         <p>{item.CopyId.copyNumber}</p>
                         <p>{item.AccId.username}</p>
                         <p>{dateFormat(item.startDate)} - {dateFormat(item.endDate)}</p>
-                        <div className='flex  flex-col lg:flex-row gap-2 text-white justify-center lg:px-0 px-2'>
+                        <div className='flex flex-col lg:flex-row gap-2 text-white justify-center lg:px-0 px-2'>
                             <button className='bg-light-purple px-2 rounded-md' onClick={openModalConfirm}>ยืนยัน</button>
                             <button type='button' className='bg-red-btn px-2 rounded-md' onClick={openModalCancel}>ยกเลิก</button>
                         </div>
@@ -147,10 +150,8 @@ const QueueBook = () => {
                                 </div>
                             </div> : ''}
                     </div>
-
                 )) : <p className='col-span-full w-full h-full'>ยังไม่มีคิว</p>}
             </div>
-
         </div>
     )
 }

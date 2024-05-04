@@ -71,7 +71,7 @@ const StatusBook = () => {
                         <p className='font-semibold'>วันที่และเวลา</p>
                         <p className='font-semibold'>รายการหนังสือ</p>
                         <p className='font-semibold'>ชื่อผู้ใช้</p>
-                        <p className='font-semibold'>ยอดเงินที่ได้รับ</p>
+                        <p className='font-semibold'>สถานะการชำระเงิน</p>
                         <p className='font-semibold'>จัดส่งภายในวันที่</p>
                         <hr className='col-span-full border-light-purple' />
                     </div>
@@ -80,7 +80,7 @@ const StatusBook = () => {
                             <p className='font-semibold'>{dateFormat(item.updatedAt)}</p>
                             <p className='font-semibold'>{item.title}</p>
                             <p className='font-semibold'>{item.accUsername}</p>
-                            <p className='font-semibold'>{item.price}</p>
+                            {item.statusOrder === 'WaitForPaid' ? <p className='font-semibold'>ยังไม่ชำระเงิน</p> : <p className='font-semibold'>ชำระเงินแล้ว</p>}
                             <p className='font-semibold'>{dateFormat(item.shippingDate)}</p>
                         </a>))
                         : <p className='col-span-full'>ยังไม่มีรายการที่ต้องตรวจสอบ</p>}
@@ -93,7 +93,7 @@ const StatusBook = () => {
                         <p className='font-semibold'>วันที่และเวลา</p>
                         <p className='font-semibold'>รายการหนังสือ</p>
                         <p className='font-semibold'>ชื่อผู้ใช้</p>
-                        <p className='font-semibold'>สถานะการชำระเงิน</p>
+                        <p className='font-semibold'>สถานะการการจัดส่ง</p>
                         <p className='font-semibold'>จัดส่งภายในวันที่</p>
                         <hr className='col-span-full border-light-purple' />
                     </div>
@@ -102,7 +102,7 @@ const StatusBook = () => {
                             <p className='font-semibold'>{dateFormat(item.updatedAt)}</p>
                             <p className='font-semibold'>{item.title}</p>
                             <p className='font-semibold'>{item.accUsername}</p>
-                            {item.statusPaid ? <p className='font-semibold'>ชำระเงินแล้ว</p> : <p className='font-semibold'>ยังไม่ชำระเงิน</p>}
+                            {item.statusOrder === 'Shipped' ? <p className='font-semibold'>จัดส่งแล้ว</p> : <p className='font-semibold'>รอการจัดส่ง</p>}
                             <p className='font-semibold'>{dateFormat(item.shippingDate)}</p>
                         </a>))
                         : <p className='col-span-full'>ยังไม่มีรายการที่ต้องจัดส่ง</p>}
@@ -125,12 +125,11 @@ const StatusBook = () => {
                             <p className='font-semibold'>{item.title}</p>
                             <p className='font-semibold'>{item.accUsername}</p>
                             <p className='font-semibold'>{dateFormat(item.endDate)}</p>
-                            {item.statusShippingReturn ? <p className='font-semibold'>ส่งคืนแล้ว</p> : <p className='font-semibold'>ยังไม่ส่งคืน</p>}
+                            {item.statusOrder === 'Returned' ? <p className='font-semibold'>ส่งคืนแล้ว</p> : <p className='font-semibold'>ยังไม่ส่งคืน</p>}
                         </a>))
                         : <p className='col-span-full'>ยังไม่มีรายการที่ต้องตรวจสอบ</p>}
                 </div>
             </div>
-
         </div>
     )
 }

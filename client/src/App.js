@@ -14,9 +14,11 @@ import StorePersonalInfo from './pages/admin/StorePersonalInfo';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import AllBooksPage from './pages/general/AllBooksPage';
+import AllStorePage from './pages/general/AllStorePage.js';
 import BookPage from './pages/general/BookPage';
 import CategoryPage from './pages/general/CategoryPage';
 import MainPage from './pages/general/MainPage';
+import SearchPage from './pages/general/SearchPage';
 import StorePage from './pages/general/StorePage';
 import CartPage from './pages/user/CartPage';
 import OpenStore from './pages/user/OpenStore';
@@ -33,7 +35,7 @@ import { logout as logoutUser } from './store/userSlice.js';
 
 function App() {
   const dispatch = useDispatch()
-  var { id, category, status } = useParams()
+  var { id, category, status, search } = useParams()
   useEffect(() => {
     const token = localStorage.getItem('token');
     const handleLogout = () => {
@@ -87,6 +89,11 @@ function App() {
             </GeneralRoute>}
           />
           <Route path='/store' element={
+            <GeneralRoute>
+              <AllStorePage />
+            </GeneralRoute>}
+          />
+          <Route path='/store/:id' element={
             <GeneralRoute>
               <StorePage />
             </GeneralRoute>}
@@ -167,6 +174,11 @@ function App() {
             <AdminRoute>
               <OrderReturn />
             </AdminRoute>
+          } />
+          <Route path='/search/:search' element={
+            <GeneralRoute>
+              <SearchPage />
+            </GeneralRoute>
           } />
         </Routes>
       </div>

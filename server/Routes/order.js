@@ -1,4 +1,4 @@
-const { addOrder, listOrderForAcc, showOrderForAcc, addUploadPayment, listItemForCheck, orderForCheck, orderConfirmCheck, listItemForShipping, addShippingDay, orderForShipping, listWaitForShipping, listItemForReturn, orderForReturn, listShipped, confirmReceiveBook, listWaitForReturn, addReturnInfo, confirmOrderComplete } = require('../Controllers/order')
+const { addOrder, listOrderForAcc, showOrderForAcc, addUploadPayment, listItemForCheck, orderForCheck, orderConfirmCheck, listItemForShipping, addShippingDay, orderForShipping, listWaitForShipping, listItemForReturn, orderForReturn, listShipped, confirmReceiveBook, listWaitForReturn, addReturnInfo, confirmOrderComplete, listOrderSuccessUser } = require('../Controllers/order')
 const express = require('express')
 const { auth } = require('../Middleware/auth')
 const { upload } = require('../Middleware/upload')
@@ -22,4 +22,5 @@ router.put('/confirmreceivebook/:id', auth, confirmReceiveBook)
 router.get('/listreturn/:id', auth, listWaitForReturn)
 router.put('/addreturninfo/:id', auth, addReturnInfo)
 router.put('/confirmordercomplete/:id', auth, confirmOrderComplete)
+router.get('/listordersuccessuser/:id', auth, listOrderSuccessUser)
 module.exports = router

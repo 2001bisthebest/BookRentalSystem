@@ -8,5 +8,4 @@ router.post('/register', upload, register)
 router.post('/login', login)
 router.post('/current-user', auth, currentUser)
 router.post('/current-admin', auth, currentAdmin)
-// router.post('/refresh', refreshToken)
 module.exports = router

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { currentAdmin } from '../../functions/auth'
@@ -7,7 +7,6 @@ import { openStore as openStoreFn } from '../../functions/user'
 
 const OpenStore = () => {
     const { user } = useSelector((state) => (state.user))
-    const [admin, setAdmin] = useState({})
     const navigate = useNavigate()
     // currentUser(user.user.token).then(res => console.log('datafrom ', res))
 
@@ -15,8 +14,8 @@ const OpenStore = () => {
         try {
             await addStore(user.id, user.token).catch(err => console.log(err))
             await openStoreFn(user.id, user.token).catch(err => console.log(err))
-            await currentAdmin(user.token, user.username).then(res => setAdmin(res.data)).catch((err) => console.log(err))
-            navigate('/storeinfo/' + admin._id)
+            let adminRes = await currentAdmin(user.token, user.username)
+            await new Promise(resolve => setTimeout(navigate('/storeinfo/' + adminRes.data._id), 1000))
         } catch (err) {
             console.log(err)
         }
