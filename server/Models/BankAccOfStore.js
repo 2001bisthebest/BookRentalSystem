@@ -9,6 +9,6 @@ const bankAccSchema = mongoose.Schema({
     accNumber: Number,
     accName: String,
     bankName: String
-}, { timestamps: true })
+})
 
 module.exports = mongoose.model('bankacc', bankAccSchema)

@@ -32,14 +32,6 @@ const orderSchema = mongoose.Schema({
     trackNumberFromCustomer: String,
     shippingNameFromStore: String,
     shippingNameFromCustomer: String,
-    file: String,
-    // statusPaid: {
-    //     type: Boolean,
-    //     default: false
-    // },
-    // statusReceiveBook: {
-    //     type: Boolean,
-    //     default: false
-    // }
+    file: String
 }, { timestamps: true })
 module.exports = mongoose.model('order', orderSchema)

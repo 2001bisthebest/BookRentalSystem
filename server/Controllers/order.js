@@ -121,7 +121,9 @@ exports.showOrderForAcc = async (req, res) => {
 exports.cancelOrder = async (req, res) => {
     try {
         const orderId = req.params.id
-        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusOrder: 'Cancel' }).exec()
+        const order = await Order.findOneAndUpdate({ _id: orderId }, { statusOrder: 'Cancel' }, { new: true }).exec()
+        const queue = await QueueReserving.findOneAndUpdate({ _id: order.QueueId }, { reservationStatus: 'Cancel' }, { new: true }).exec()
+        const bookCopy = await BookCopy.findOneAndUpdate({ _id: queue.CopyId }, { status: false }).exec()
         res.send(order)
     } catch (err) {
         console.log(err)
@@ -192,7 +194,8 @@ exports.orderForCheck = async (req, res) => {
             file: order.file,
             price: order.price,
             updatedAt: order.updatedAt,
-            bookFile: book.file
+            bookFile: book.file,
+            statusOrder: order.statusOrder
         }
         res.send(orderDetail)
     } catch (err) {
@@ -501,7 +504,7 @@ exports.confirmReceiveBook = async (req, res) => {
 exports.listWaitForReturn = async (req, res) => {
     try {
         const accId = req.params.id
-        const order = await Order.find({ AccId: accId, statusOrder: 'WaitForReturn' }).populate('QueueId').exec()
+        const order = await Order.find({ AccId: accId, $or: [{ statusOrder: 'WaitForReturn' }, { statusOrder: 'Returned' }] }).populate('QueueId').exec()
         var bookId = []
         var book = []
         for (let value of order) {

@@ -16,5 +16,5 @@ const userSchema = mongoose.Schema({
         type: String,
         default: 'noprofile.jpg'
     }
-}, { timestamps: true })
+})
 module.exports = mongoose.model('users', userSchema)

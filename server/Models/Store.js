@@ -29,5 +29,5 @@ const storeSchema = mongoose.Schema({
         type: String,
         default: 'noprofile.jpg'
     }
-}, { timestamps: true })
+})
 module.exports = mongoose.model('stores', storeSchema)

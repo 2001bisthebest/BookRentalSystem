@@ -41,7 +41,7 @@ function MainPage() {
             <div className='flex flex-col w-full h-full px-20 items-center justify-center gap-10'>
                 <p className='font-semibold lg:text-xl'>หนังสือแนะนำ</p>
                 <div className='w-full h-full flex flex-cols gap-10 overflow-x-auto overflow-y-hidden'>
-                    {bookReccom.length > 1 && user != null ? bookReccom.map((item) =>
+                    {bookReccom.length > 0 && user != null ? bookReccom.map((item) =>
                         <div className='flex flex-col gap-4 items-center w-40' key={bookReccom._id}>
                             <div className='relative w-20 h-20 lg:w-40 lg:h-40'>
                                 {item.status ?
