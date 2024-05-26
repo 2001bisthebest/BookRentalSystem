@@ -97,7 +97,7 @@ const QueueBook = () => {
     }
 
     return (
-        <div className="relative w-full h-full grow py-20 border flex flex-col justify-start gap-10 bg-white-bg px-24">
+        <div className="relative w-full h-screen grow py-20 border flex flex-col justify-start gap-10 bg-white-bg px-24">
             <h1 className='self-start font-bold text-lg'>คิวหนังสือ {book.title}</h1>
             <div className='flex gap-5 lg:gap-10'>
                 <div className='w-28 h-28 lg:w-36 lg:h-36 flex justify-center'>

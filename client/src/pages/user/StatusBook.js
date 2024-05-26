@@ -38,67 +38,53 @@ const StatusBook = ({ initialStatus }) => {
         loadData()
     }, [user._id])
     const loadData = async () => {
-        currentUser(token).then(res => setUser(res.data)).catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listqueueforuser/' + user._id, {
-            headers: {
-                authtoken: token
-            }
-        })
-            .then(res => {
-                setReserved(res.data)
-                console.log(res.data)
+        try {
+            currentUser(token).then(res => setUser(res.data)).catch(err => console.log(err))
+            let reservedRes = await axios.get(process.env.REACT_APP_API + '/listqueueforuser/' + user._id, {
+                headers: {
+                    authtoken: token
+                }
             })
-            .catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listorderuser/' + user._id, {
-            headers: {
-                authtoken: token
-            }
-        })
-            .then(res => {
-                setWaitForPayment(res.data)
-                console.log(res.data)
+            setReserved(reservedRes.data)
+            console.log(reservedRes.data)
+            let waitForPaymentRes = await axios.get(process.env.REACT_APP_API + '/listorderuser/' + user._id, {
+                headers: {
+                    authtoken: token
+                }
             })
-            .catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listwaitforshipping/' + user._id, {
-            headers: {
-                authtoken: token
-            }
-        })
-            .then(res => {
-                setWaitForShipping(res.data)
-                console.log(res.data)
+            setWaitForPayment(waitForPaymentRes.data)
+            console.log(waitForPaymentRes.data)
+            let waitForShippingRes = await axios.get(process.env.REACT_APP_API + '/listwaitforshipping/' + user._id, {
+                headers: {
+                    authtoken: token
+                }
             })
-            .catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listshipped/' + user._id, {
-            headers: {
-                authtoken: token
-            }
-        })
-            .then(res => {
-                setShipped(res.data)
-                console.log(res.data)
+            setWaitForShipping(waitForShippingRes.data)
+            let shippedRes = await axios.get(process.env.REACT_APP_API + '/listshipped/' + user._id, {
+                headers: {
+                    authtoken: token
+                }
             })
-            .catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listreturn/' + user._id, {
-            headers: {
-                authtoken: token
-            }
-        })
-            .then(res => {
-                setToReturn(res.data)
-                console.log(res.data)
+            setShipped(shippedRes.data)
+            console.log(shippedRes.data)
+            let toReturnRes = await axios.get(process.env.REACT_APP_API + '/listreturn/' + user._id, {
+                headers: {
+                    authtoken: token
+                }
             })
-            .catch(err => console.log(err))
-        await axios.get(process.env.REACT_APP_API + '/listordersuccessuser/' + user._id, {
-            headers: {
-                authtoken: token
-            }
-        })
-            .then(res => {
-                setOrderSuccess(res.data)
-                console.log(res.data)
+            setToReturn(toReturnRes.data)
+            console.log(toReturnRes.data)
+            let orderRes = await axios.get(process.env.REACT_APP_API + '/listordersuccessuser/' + user._id, {
+                headers: {
+                    authtoken: token
+                }
             })
-            .catch(err => console.log(err))
+            setOrderSuccess(orderRes.data)
+            console.log(orderRes.data)
+        }
+        catch (err) {
+            console.log(err)
+        }
     }
     const onClickCancelQueue = async (id) => {
         await axios.delete(process.env.REACT_APP_API + '/cancelqueue/' + id, {
@@ -189,7 +175,7 @@ const StatusBook = ({ initialStatus }) => {
         switch (status) {
             case "reserved":
                 return (
-                    <div className='relative w-full h-full'>
+                    <div className='relative w-full h-screen'>
                         {reserved && reserved.length > 0 ? reserved.map((item) =>
                             <div className='flex flex-col gap-5 w-full px-20 lg:px-32 pb-10 xl:pb-20'>
                                 <div className='flex w-full justify-between'>
@@ -225,7 +211,7 @@ const StatusBook = ({ initialStatus }) => {
                 );
             case "pending":
                 return (
-                    <div className='relative w-full h-full'>
+                    <div className='relative w-full h-screen'>
                         {waitForPayment && waitForPayment.length > 0 ? waitForPayment.map((item) =>
                             <div className='flex flex-col w-full gap-5 px-20 lg:px-32 pb-10 xl:pb-20'>
                                 <div className='flex w-full justify-between'>
@@ -271,7 +257,7 @@ const StatusBook = ({ initialStatus }) => {
                 );
             case "wait-for-shipment":
                 return (
-                    <div className='relative w-full h-full'>
+                    <div className='relative w-full h-screen'>
                         {waitForShipping && waitForShipping.length > 0 ? waitForShipping.map((item) =>
                             <div className='flex flex-col w-full gap-5 px-20 lg:px-32 pb-10 xl:pb-20'>
                                 <div className='flex w-full justify-between'>
@@ -295,7 +281,7 @@ const StatusBook = ({ initialStatus }) => {
                 );
             case "shipped":
                 return (
-                    <div className='relative w-full h-full'>
+                    <div className='relative w-full h-screen'>
                         {shipped && shipped.length > 0 ? shipped.map((item) =>
                             <div className='flex flex-col w-full gap-5 px-20 lg:px-32 pb-10 xl:pb-20'>
                                 <div className='flex w-full justify-between'>
@@ -333,7 +319,7 @@ const StatusBook = ({ initialStatus }) => {
                 );
             case "wait-for-return":
                 return (
-                    <div className='relative w-full h-full'>
+                    <div className='relative w-full h-screen'>
                         {toReturn && toReturn.length > 0 ? toReturn.map((item) =>
                             <div className='flex flex-col w-full gap-5 px-20 lg:px-32 pb-10 xl:pb-20'>
                                 <div className='flex w-full justify-between'>
@@ -397,7 +383,7 @@ const StatusBook = ({ initialStatus }) => {
                 );
             case "order-success":
                 return (
-                    <div className='relative w-full h-full'>
+                    <div className='relative w-full h-screen'>
                         {orderSuccess && orderSuccess.length > 0 ? orderSuccess.map((item) =>
                             <div className='flex flex-col w-full gap-5 px-20 lg:px-32 pb-10 xl:pb-20'>
                                 <div className='flex w-full justify-between'>

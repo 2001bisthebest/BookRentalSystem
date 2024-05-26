@@ -63,7 +63,7 @@ const StatusBook = () => {
         return result
     }
     return (
-        <div className="w-full h-full grow py-20 border flex flex-col justify-start gap-10 bg-white-bg">
+        <div className="w-full h-screen grow py-20 border flex flex-col justify-start gap-10 bg-white-bg">
             <div className='w-full flex flex-col gap-5 px-20'>
                 <h1 className='self-start font-semibold'>ยอดที่ต้องตรวจสอบ</h1>
                 <div className='border rounded-md border-light-purple'>

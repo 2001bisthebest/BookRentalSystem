@@ -308,14 +308,27 @@ exports.listReccomandBook = async (req, res) => {
             })
             const isAvaliable = (cur) => cur === true
             const result = status.every(isAvaliable)
-            let bookWithStatus = {
-                _id: book._id,
-                title: book.title,
-                price: book.price,
-                file: book.file,
-                status: result
+            let category = await CategoryOfBook.findOne({ bookId: book._id }).exec()
+            let categoryName
+            for (let item of category.categoryId) {
+                for (let value of bookPref.CategoryId) {
+                    if (value.equals(item)) {
+                        let categoryId = await Category.findOne({ _id: item }).exec()
+                        categoryName = categoryId.name
+                    }
+                }
             }
-            listBook.push(bookWithStatus)
+            if (result === false) {
+                let bookWithStatus = {
+                    _id: book._id,
+                    title: book.title,
+                    price: book.price,
+                    file: book.file,
+                    status: result,
+                    categoryName: categoryName
+                }
+                listBook.push(bookWithStatus)
+            }
         }
         function generateRandomArray(length, max) {
             let result = new Set();

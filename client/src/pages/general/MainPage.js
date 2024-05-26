@@ -56,6 +56,7 @@ function MainPage() {
                             </div>
                             <div className='flex flex-col gap-1 text-sm lg:text-base'>
                                 <p className='font-semibold'>{item.title}</p>
+                                <p>{item.categoryName}</p>
                                 <p>{item.price} บาท</p>
                             </div>
                         </div>
@@ -63,7 +64,7 @@ function MainPage() {
                 </div>
                 <p className='font-semibold lg:text-xl'>หนังสือใหม่</p>
                 <div className='w-full h-full flex flex-cols gap-10 overflow-x-auto overflow-y-hidden'>
-                    {book != null ? book.map((item) =>
+                    {book.length > 0 ? book.map((item) =>
                         <div className='flex flex-col gap-4 items-center w-40' key={book._id}>
                             <div className='relative w-20 h-20 lg:w-40 lg:h-40'>
                                 {item.status ?
@@ -81,7 +82,7 @@ function MainPage() {
                                 <p>{item.price} บาท</p>
                             </div>
                         </div>
-                    ) : <div><p>ยังไม่มีหนังสือใหม่</p></div>}
+                    ) : <p>ยังไม่มีหนังสือใหม่</p>}
                 </div>
             </div>
         </div>

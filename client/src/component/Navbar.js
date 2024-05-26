@@ -81,7 +81,8 @@ const Navbar = () => {
             const userFromCurrentUser = await currentUser(user.token)
             setUserInfo(userFromCurrentUser.data)
             // if (userInfo.haveStore) {
-            await currentAdmin(user.token, user.username).then(res => setAdminInfo(res.data)).catch(err => console.log(err))
+            let adminRes = await currentAdmin(user.token, user.username)
+            setAdminInfo(adminRes.data)
             // }
         } catch (err) {
             console.log(err)

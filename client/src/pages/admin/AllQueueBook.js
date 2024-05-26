@@ -29,7 +29,7 @@ const AllQueueBook = () => {
         navigate('/queuebookadmin/' + id)
     }
     return (
-        <div className="w-full h-full grow py-20 border flex flex-col justify-start gap-10 bg-white-bg px-24">
+        <div className="w-full h-screen grow py-20 border flex flex-col justify-start gap-10 bg-white-bg px-24">
             <h1 className='self-start font-bold text-lg lg:text-xl'>คิวหนังสือ</h1>
             {book.length > 0 ? book.map((item) =>
                 <div className='flex flex-col gap-5 lg:gap-10 w-full ' key={item._id}>
