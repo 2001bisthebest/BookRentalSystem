@@ -1,6 +1,31 @@
 ﻿# BookRentalSystem
 BookRentalSystem เป็นโครงงานในวิชา CS403 ประกอบไปด้วยส่วน client และ server
 
+# Project structure
+```
+├───client
+│   ├───public
+│   └───src
+│       ├───component
+│       ├───functions
+│       ├───images
+│       ├───pages
+│       │   ├───admin
+│       │   ├───auth
+│       │   ├───general
+│       │   └───user
+│       ├───route
+│       ├───store
+│       └───SVG
+└───server
+    ├───Config
+    ├───Controllers
+    ├───Middleware
+    ├───Models
+    ├───Routes
+    └───uploads
+```
+
 # Instalation & Open project
 วิธีการติดตั้งทำได้ดังนี้
 1. ดาวน์โหลด source code
